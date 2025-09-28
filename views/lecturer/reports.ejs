@@ -1,0 +1,66 @@
+<%- include('../partials/header', {title: 'Lecturer Reports'}) %>
+            <h1>Reports & Analytics</h1>
+            
+            <!-- Gender Performance Chart -->
+            <div class="chart-container">
+                <h2>Gender Performance Comparison</h2>
+                <canvas id="genderPerformanceChart" width="400" height="200"></canvas>
+            </div>
+            
+            <!-- Program Statistics -->
+            <div class="chart-container">
+                <h2>Pragram General Performance</h2>
+                <canvas id="programStatisticsChart" width="400" height="200"></canvas>
+            </div>
+            
+            <script>
+                // Load performance comparison data
+                fetch('/api/performance-comparison/DMS-301')
+                    .then(response => response.json())
+                    .then(data => {
+                        initGenderPerformanceChart(data);
+                    });
+                    
+                function initGenderPerformanceChart(data) {
+                    const ctx = document.getElementById('genderPerformanceChart').getContext('2d');
+                    
+                    // Process data for chart
+                    const maleData = data.filter(item => item.gender === 'M');
+                    const femaleData = data.filter(item => item.gender === 'F');
+                    
+                    new Chart(ctx, {
+                        type: 'scatter',
+                        data: {
+                            labels: ['BIT', 'BIS'],
+                            datasets: [
+                                {
+                                    label: 'Male Students',
+                                    data: [maleData.find(d => d.program_id === 'PBIT')?.average_score || 0, 
+                                           maleData.find(d => d.program_id === 'PBIS')?.average_score || 0],
+                                    backgroundColor: 'rgba(54, 162, 235, 0.6)'
+                                },
+                                {
+                                    label: 'Female Students',
+                                    data: [femaleData.find(d => d.program_id === 'PBIT')?.average_score || 0,
+                                           femaleData.find(d => d.program_id === 'PBIS')?.average_score || 0],
+                                    backgroundColor: 'rgba(255, 99, 132, 0.6)'
+                                }
+                            ]
+                        }
+                    });
+                }
+                
+                // Program statistics chart
+                const programCtx = document.getElementById('programStatisticsChart').getContext('2d');
+                new Chart(programCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Distinction', 'Credit', 'Pass', 'Fail'],
+                        datasets: [{
+                            data: [25, 35, 30, 10],
+                            backgroundColor: ['#4CAF50', '#2196F3', '#FFC107', '#F44336']
+                        }]
+                    }
+                });
+            </script>
+<%- include('../partials/footer') %>

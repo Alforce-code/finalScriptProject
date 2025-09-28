@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title> Mubas Grading System</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+body {margin:0;font-family:Arial,sans-serif;background:#f5f7fa;color:#333;}
+.header {background:#003366;color:#fff;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;}
+.header .logo {display:flex;align-items:center;}
+.header .logo img {height:40px;margin-right:10px;}
+.header .user-info {display:flex;align-items:center;gap:10px;}
+.header .user-info img {width:40px;height:40px;border-radius:50%;border:2px solid #fff;}
+.navbar {background:#004c99;overflow-x:auto;}
+.navbar ul {display:flex;list-style:none;margin:0;padding:0;}
+.navbar li {padding:12px 20px;color:#fff;cursor:pointer;}
+.navbar li:hover,.navbar li.active {background:#0059b3;}
+.dashboard {display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;padding:20px;}
+.card {background:#fff;border-radius:8px;padding:15px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+.card h3 {margin:0 0 10px;font-size:16px;color:#555;}
+.card .value {font-size:20px;font-weight:bold;}
+.card-blue {border-left:5px solid #007bff;}
+.card-red {border-left:5px solid #d9534f;}
+.card-green {border-left:5px solid #5cb85c;}
+.quick-links {background:#fff;margin:0 20px 20px;padding:15px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+.quick-links a {margin-right:20px;font-weight:bold;}
+.content {display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;padding:20px;}
+.section {background:#fff;border-radius:8px;padding:15px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+.section h4 {margin:0 0 10px;color:#555;}
+.table {width:100%;border-collapse:collapse;}
+.table tr {border-bottom:1px solid #eee;}
+.table td {padding:8px;}
+.notice {margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #eee;}
+.notice .date {color:#d9534f;font-size:12px;margin-bottom:4px;}
+.notice b {display:block;}
+.footer {background:#003366;color:#fff;text-align:center;padding:10px;margin-top:20px;font-size:14px;}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="logo">
+    <img src="/images/mubas_logo.png" alt="Logo">
+    <span>MUBAS GRADING SYSTEM</span>
+  </div>
+  <div class="user-info">
+    <span style="color:#05d72f;">Welcome <%= student.first_name || "N/A" %> <%= student.last_name || "" %></span>
+    <img src="<%= student.photo || '/images/—Pngtree—illustration of graduation cap on_20093403.png' %>" alt="Avatar">
+  </div>
+</div>
+
+<!-- Navbar -->
+<div class="navbar">
+  <ul>
+    <li class="active"><a href="/student/dashboard" style="text-decoration: none; color: white;">My account</a></li>
+    <li><a href="/student/profile" style="text-decoration: none; color: white;">Profile</a></li>
+        <li><a href="/student/grades" style="text-decoration: none;color: white;">All Grades</a></li>
+          <li><a href="/student/grades" style="text-decoration: none; color: white;">Exam Results</a></li>
+
+          <li><a href="/logout" style="margin-left:10px;font-size: 20px; ;padding-left: 650px;  color:red; border-radius:4px; text-decoration:none;"> <i class="fas fa-sign-out-alt"></i>Logout</a></li>
+
+   <!----<li>Accommodation</li>
+    <li>Regulations</li>
+    <li>Administrative diary</li>-->
+  </ul>
+</div>
+
+<!-- Dashboard cards -->
+<div class="dashboard">
+  <div class="card card-blue">
+    <h3>Account Balance</h3>
+    <div class="value">MK2000</div>
+  </div>
+  <div class="card card-red">
+    <h3>Registration status</h3>
+    <div class="value"><%= student.class_name || "BIS3" %></div>
+    <div>Registered (<%= student.registration_date || "02/July/2025 -Closed" %>)</div>
+  </div>
+  <div class="card card-green">
+    <h3>Registration period (Semester 2)</h3>
+    <div class="value"><%= student.reg_period_start || "" %> <%= student.reg_period_end || "" %></div>
+    <div style="color:#05d72f;"><%= student.registration_status || "02/03/2025-10/04/2025" %></div>
+  </div>
+</div>
+
+<!-- Quick links -->
+<div class="quick-links">
+ 
+  <a href="/student/grades" style="text-decoration: none;"> <i class="fas fa-info-circle"></i>  Examination results available</a>
+</div>
+
+<!-- Content sections -->
+<div class="content">
+
+  <!-- Calendar -->
+  <div class="section">
+    <h4>Calendar of Events</h4>
+   <!-- Calendar of Events -->
+<div class="section">
+  <h4><i class="fas fa-calendar-alt"></i> Calendar of Events</h4>
+
+  <table class="table" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+    <thead>
+      <tr style="background:#f0f0f0;">
+        <th style="padding: 8px; text-align:left;"></th>
+        <th style="padding: 8px; text-align:left;">Event Name</th>
+        <th style="padding: 8px; text-align:left;">Date</th>
+        <th style="padding: 8px; text-align:left;">Location</th>
+        <th style="padding: 8px; text-align:left;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Orientation Day</td>
+        <td>2026-01-(26-28)</td>
+        <td>Comesa Hall</td>
+        <td>Welcome new students and briefing.</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Sports Day</td>
+        <td>2026-03-05</td>
+        <td>MUBAS Ground</td>
+        <td>Annual sports competitions.</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>End of Semester 3 Exams</td>
+        <td>2025-10-15</td>
+        <td>Various Classrooms</td>
+        <td>Exams for Semester 2 modules.</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Graduation Ceremony</td>
+        <td>2025-10-25</td>
+        <td>MUBAS Ground</td>
+        <td>Graduating students' ceremony.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+  </div>
+
+  <!-- Modules table -->
+  <div class="section">
+    <h4><i class="fas fa-book"></i> Modules to attend - Semester 2</h4>
+    <% if (modules && modules.length > 0) { %>
+      <table class="table">
+        <% modules.forEach((m, i) => { %>
+          <tr>
+            <td><%= i + 1 %></td>
+            <td><%= m.module_code %> <%= m.module_name %></td>
+          </tr>
+        <% }) %>
+      </table>
+    <% } else { %>
+      <p>No registered modules.</p>
+    <% } %>
+  </div>
+
+
+</body>
+</html>

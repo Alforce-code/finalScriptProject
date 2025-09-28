@@ -1,0 +1,128 @@
+<%- include('../partials/header', {title: 'Student Profile'}) %>
+
+<div class="content" style="padding: 20px; max-width: 1200px; margin: 0 auto;">
+
+  <h1 style="margin-bottom: 10px; color: #333; border-bottom: 2px solid #ddd; padding-bottom: 10px;">Student Profile</h1>
+
+  <% if (student) { %>
+
+    <h2 style="margin-bottom: 30px; color: #555; font-weight: normal;">
+      <%= student.first_name %> <%= student.last_name %> (<%= student.registration_number %>)
+    </h2>
+
+    <!-- Personal Information -->
+    <h3 style="margin-bottom: 15px; color: #333;">Personal Information</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+      <tr>
+        <td style="font-weight: bold; padding: 8px; width: 200px; color: #555;">First Name</td>
+        <td style="padding: 8px;"><%= student.first_name || 'N/A' %></td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; padding: 8px; color: #555;">Last Name</td>
+        <td style="padding: 8px;"><%= student.last_name || 'N/A' %></td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; padding: 8px; color: #555;">Registration Number</td>
+        <td style="padding: 8px;"><%= student.registration_number || 'N/A' %></td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; padding: 8px; color: #555;">Date of Birth</td>
+        <td style="padding: 8px;"><%= student.date_of_birth || '07 Jan 2003' %></td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; padding: 8px; color: #555;">Gender</td>
+        <td style="padding: 8px;"><%= student.gender || 'M' %></td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; padding: 8px; color: #555;">Marital Status</td>
+        <td style="padding: 8px;"><%= student.marital_status || 'Single' %></td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; padding: 8px; color: #555;">Religion</td>
+        <td style="padding: 8px;"><%= student.religion || 'Christianity' %></td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; padding: 8px; color: #555;">Nationality</td>
+        <td style="padding: 8px;"><%= student.nationality || 'Malawian' %></td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; padding: 8px; color: #555;">Country</td>
+        <td style="padding: 8px;"><%= student.country || 'Malawi' %></td>
+      </tr>
+    </table>
+
+    <!-- College Entry -->
+    <h3 style="margin-bottom: 15px; color: #333;">College Entry Year</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+      <tr>
+        <td style="font-weight: bold; padding: 8px; width: 200px; color: #555;">Program of Study</td>
+        <td style="padding: 8px;"><%= student.program || 'N/A' %></td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; padding: 8px; color: #555;">Entry Year</td>
+        <td style="padding: 8px;"><%= student.entry_year || '2023' %></td>
+      </tr>
+    </table>
+
+    <!-- Contacts -->
+    <h3 style="margin-bottom: 15px; color: #333;">Contacts</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+      <tr>
+        <td style="font-weight: bold; padding: 8px; width: 200px; color: #555;">Phone Number</td>
+        <td style="padding: 8px;"><%= student.phone || '0886601803' %></td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; padding: 8px; color: #555;">Postal Address</td>
+        <td style="padding: 8px;"><%= student.postal_address || 'P.O. BOX 31, RUMPHI' %></td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; padding: 8px; color: #555;">Email</td>
+        <td style="padding: 8px;"><%= student.email || 'kalua.alforce@gmail.com' %></td>
+      </tr>
+    </table>
+
+    <!-- Next of Kin -->
+    <h3 style="margin-bottom: 15px; color: #333;">Next of Kin</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+      <tr>
+        <td style="font-weight: bold; padding: 8px; width: 200px; color: #555;">Full Name</td>
+        <td style="padding: 8px;"><%= student.next_of_kin_name || 'Mr John Katantha' %></td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; padding: 8px; color: #555;">Relationship</td>
+        <td style="padding: 8px;"><%= student.next_of_kin_relationship || 'Brother' %></td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; padding: 8px; color: #555;">Phone</td>
+        <td style="padding: 8px;"><%= student.next_of_kin_phone || '0888019455' %></td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; padding: 8px; color: #555;">Postal Address</td>
+        <td style="padding: 8px;"><%= student.next_of_kin_address || 'P.O. BOX 31, RUMPHI' %></td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold; padding: 8px; color: #555;">Email</td>
+        <td style="padding: 8px;"><%= student.next_of_kin_email || 'nkatantha@gmail.com' %></td>
+      </tr>
+    </table>
+
+    <!-- Emergency Contact -->
+    <h3 style="margin-bottom: 15px; color: #333;">Emergency Contact</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+      <tr>
+        <td style="font-weight: bold; padding: 8px; width: 200px; color: #555;">Contact</td>
+        <td style="padding: 8px;"><%= student.emergency_contact || 'Mr Katantha 0993422211' %></td>
+      </tr>
+    </table>
+
+  <% } else { %>
+    <p>Student information not found</p>
+  <% } %>
+
+  <div style="margin-bottom: 20px;">
+    <a href="/student/dashboard" class="btn" style="background: #007bff; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Back to Dashboard</a>
+  </div>
+
+</div>
+
+<%- include('../partials/footer') %>

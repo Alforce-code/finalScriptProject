@@ -1,0 +1,45 @@
+<%- include('../partials/header', {title: 'Manage Programs'}) %>
+            <h1>Manage Programs</h1>
+            
+            <h2>Programs</h2>
+            <table style="width: 100%; border-collapse: collapse; background: white;">
+                <tr>
+                    <th style="padding: 0.75rem; border-bottom: 1px solid #ddd;">Program ID</th>
+                    <th style="padding: 0.75rem; border-bottom: 1px solid #ddd;">Name</th>
+                </tr>
+                <% if (programs && programs.length > 0) { %>
+                    <% programs.forEach(program => { %>
+                        <tr>
+                            <td style="padding: 0.75rem; border-bottom: 1px solid #ddd;"><%= program.program_id %></td>
+                            <td style="padding: 0.75rem; border-bottom: 1px solid #ddd;"><%= program.name %></td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="2" style="padding: 0.75rem; text-align: center;">No programs found</td>
+                    </tr>
+                <% } %>
+            </table>
+            
+            <h2>Classes</h2>
+            <table style="width: 100%; border-collapse: collapse; background: white; margin-top: 1rem;">
+                <tr>
+                    <th style="padding: 0.75rem; border-bottom: 1px solid #ddd;">Class ID</th>
+                    <th style="padding: 0.75rem; border-bottom: 1px solid #ddd;">Program</th>
+                    <th style="padding: 0.75rem; border-bottom: 1px solid #ddd;">Year</th>
+                </tr>
+                <% if (classes && classes.length > 0) { %>
+                    <% classes.forEach(classItem => { %>
+                        <tr>
+                            <td style="padding: 0.75rem; border-bottom: 1px solid #ddd;"><%= classItem.class_id %></td>
+                            <td style="padding: 0.75rem; border-bottom: 1px solid #ddd;"><%= classItem.program_id %></td>
+                            <td style="padding: 0.75rem; border-bottom: 1px solid #ddd;"><%= classItem.year %></td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="3" style="padding: 0.75rem; text-align: center;">No classes found</td>
+                    </tr>
+                <% } %>
+            </table>
+<%- include('../partials/footer') %>

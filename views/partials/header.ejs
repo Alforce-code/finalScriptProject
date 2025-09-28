@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUBAS Grading System - <%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo" style="color: aqua; font-size: 40px; padding-left: 400px; white-space: nowrap; padding-right: 400px; text-align: center;">MUBAS GRADING SYSTEM <a href="/logout" style="margin-left:10px;font-size: 20px; ;padding-left: 100px;  color:red; border-radius:4px; text-decoration:none;"> <i class="fas fa-sign-out-alt"></i>Logout</a>
+                        </div>
+            <nav>
+            
+                <ul>
+                    <% if (user) { %>
+                        <% if (user.role === 'admin') { %>
+                            <li><a href="/admin/dashboard">Dashboard</a></li>
+                            <li><a href="/admin/manage-users">Manage Users</a></li>
+                            <li><a href="/admin/manage-programs">Manage Programs</a></li>
+                            <li><a href="/admin/reports">Reports</a></li>
+                        <% } else if (user.role === 'lecturer') { %>
+                            <li><a href="/lecturer/dashboard">Dashboard</a></li>
+                            <li><a href="/lecturer/manage-grades">Manage Grades</a></li>
+                            <li><a href="/lecturer/reports">Reports</a></li>
+                        <% } else if (user.role === 'student') { %>
+                            <li><a href="/student/dashboard">Dashboard</a></li>
+                            <li><a href="/student/profile">Profile</a></li>
+                            <li><a href="/student/grades">Grades</a></li>
+                        <% } %>
+                        <li><a href="/auth/change-password">Change Password</a></li>
+                    <% } else { %>
+                        
+                    <% } %>
+                </ul>
+
+</nav>
+            </nav>
+        </div>
+    </header>
+    
+    <main>
+        <div class="container"></div>

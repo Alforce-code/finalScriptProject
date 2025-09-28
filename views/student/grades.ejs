@@ -1,0 +1,56 @@
+<%- include('../partials/header', {title: 'My Grades'}) %>
+            <h1>My Grades</h1>
+            
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-error"><%= error %></div>
+            <% } %>
+            
+            <!-- Simple Grades Table -->
+            <h2>All Grades</h2>
+            <% if (typeof grades !== 'undefined' && grades && grades.length > 0) { %>
+                <table style="width: 100%; border-collapse: collapse; background: white;">
+                    <tr style="background-color: #f8f9fa;">
+                        <th style="padding: 0.75rem; border-bottom: 1px solid #ddd;">Module</th>
+                        <th style="padding: 0.75rem; border-bottom: 1px solid #ddd;">Assessment</th>
+                        <th style="padding: 0.75rem; border-bottom: 1px solid #ddd;">Score</th>
+                        <th style="padding: 0.75rem; border-bottom: 1px solid #ddd;">Status</th>
+                    </tr>
+                    <% grades.forEach(grade => { %>
+                        <tr>
+                            <td style="padding: 0.75rem; border-bottom: 1px solid #ddd;">
+                                <%= grade.module_name || 'N/A' %>
+                            </td>
+                            <td style="padding: 0.75rem; border-bottom: 1px solid #ddd;">
+                                <%= grade.assessment_name || 'Assessment' %>
+                            </td>
+                            <td style="padding: 0.75rem; border-bottom: 1px solid #ddd;">
+                                <span style="color: <%= grade.score >= 50 ? 'green' : 'red' %>; font-weight: bold;">
+                                    <%= grade.score !== null ? grade.score + '%' : 'N/A' %>
+                                </span>
+                            </td>
+                            <td style="padding: 0.75rem; border-bottom: 1px solid #ddd;">
+                                <% if (grade.score === null) { %>
+                                    <span style="color: #f39c12;">Not Graded</span>
+                                <% } else if (grade.score >= 70) { %>
+                                    <span style="color: #27ae60;">Distinction</span>
+                                <% } else if (grade.score >= 60) { %>
+                                    <span style="color: #3498db;">Credit</span>
+                                <% } else if (grade.score >= 50) { %>
+                                    <span style="color: #f39c12;">Pass</span>
+                                <% } else { %>
+                                    <span style="color: #e74c3c;">Fail</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </table>
+            <% } else { %>
+                <div class="alert alert-info">
+                    No grades available yet. Your grades will appear here once they are entered by your lecturers.
+                </div>
+            <% } %>
+            
+            <div style="margin-top: 2rem;">
+                <a href="/student/dashboard" class="btn">Back</a>
+            </div>
+<%- include('../partials/footer') %>

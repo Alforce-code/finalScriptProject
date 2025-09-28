@@ -1,0 +1,54 @@
+<%- include('../partials/header', {title: 'Admin Dashboard'}) %>
+    <h1>Admin Dashboard</h1>
+    <p>Good to see you, <%= user.firstName %>!</p>
+    
+    <div class="dashboard-cards">
+        <div class="card">
+            <h3>Students</h3>
+            <div class="number"><%= studentCount %></div>
+        </div>
+        <div class="card">
+            <h3>Lecturers</h3>
+            <div class="number"><%= lecturerCount %></div>
+        </div>
+        <div class="card">
+            <h3>Programs</h3>
+            <div class="number"><%= programCount %></div>
+        </div>
+        <div class="card">
+            <h3>Modules</h3>
+            <div class="number"><%= moduleCount %></div>
+        </div>
+    </div>
+
+           <!-- System Overview Chart -->
+            <div class="chart-container">
+                <h2>System Overview</h2>
+                <canvas id="systemOverviewChart" width="400" height="200"></canvas>
+            </div>
+            
+            <script>
+                // System overview chart
+                const ctx = document.getElementById('systemOverviewChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['BIT Students', 'BIS Students', 'Lecturers', 'Modules'],
+                        datasets: [{
+                            data: [120, 150, 15, 25], // Example data
+                            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
+                        }]
+                    }
+                });
+            </script>
+    
+    <div class="table-container">
+        <h2>Quick Actions</h2>
+        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+            <a href="/auth/register" class="btn">Register New User</a>
+            <a href="/admin/manage-users" class="btn">Manage Users</a>
+            <a href="/admin/manage-programs" class="btn">Manage Programs</a>
+            <a href="/admin/reports" class="btn">View Reports</a>
+        </div>
+    </div>
+<%- include('../partials/footer') %>

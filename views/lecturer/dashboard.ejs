@@ -1,0 +1,21 @@
+<%- include('../partials/header', {title: 'Lecturer Dashboard'}) %>
+            <h1>Lecturer Dashboard</h1>
+            <p>Good to see you, <%= user.firstName %>!</p>
+            
+            <h2>Your Modules</h2>
+            <% if (modules && modules.length > 0) { %>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <% modules.forEach(module => { %>
+                        <div style="background: white; padding: 1rem; border-radius: 8px;">
+                            <h3><%= module.module_id %></h3>
+                            <p><%= module.name %></p>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <p>No modules assigned</p>
+            <% } %>
+             <div style="margin-top: 2rem;">
+                <a href="/lecturer/manage-grades" class="btn">Manage Grades</a>
+            </div>
+<%- include('../partials/footer') %>

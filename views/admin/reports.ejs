@@ -1,0 +1,25 @@
+<%- include('../partials/header', {title: 'Reports'}) %>
+            <h1>Reports</h1>
+            
+            <h2>Students Repeating Year (Failed 2+ Modules)</h2>
+            <table style="width: 100%; border-collapse: collapse; background: white;">
+                <tr>
+                    <th style="padding: 0.75rem; border-bottom: 1px solid #ddd;">Registration Number</th>
+                    <th style="padding: 0.75rem; border-bottom: 1px solid #ddd;">Name</th>
+                    <th style="padding: 0.75rem; border-bottom: 1px solid #ddd;">Failed Modules</th>
+                </tr>
+                <% if (repeatingStudents && repeatingStudents.length > 0) { %>
+                    <% repeatingStudents.forEach(student => { %>
+                        <tr>
+                            <td style="padding: 0.75rem; border-bottom: 1px solid #ddd;"><%= student.registration_number %></td>
+                            <td style="padding: 0.75rem; border-bottom: 1px solid #ddd;"><%= student.first_name %> <%= student.last_name %></td>
+                            <td style="padding: 0.75rem; border-bottom: 1px solid #ddd;"><%= student.failed_count %></td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="3" style="padding: 0.75rem; text-align: center;">No students found</td>
+                    </tr>
+                <% } %>
+            </table>
+<%- include('../partials/footer') %>
