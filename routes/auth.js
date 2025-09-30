@@ -109,7 +109,7 @@ router.post("/register", requireAuth, async (req, res) => {
             // Register student
             await req.pool.promise().query(
                 "INSERT INTO student (registration_number, first_name, last_name, email, gender) VALUES (?, ?, ?, ?, ?)",
-                [registrationNumber, firstName, lastName, email, gender] // Default gender to M for demo
+                [registrationNumber, firstName, lastName, email, 'M'] // Default gender to M for demo
             );
             
             // Add to class enrollment
