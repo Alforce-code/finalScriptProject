@@ -1,88 +1,31 @@
 const express = require("express");
-const mysql2 = require("mysql2");
-const session = require("express-session");
-const cookieParser = require("cookie-parser");
-const path = require("path");
-const app = express();
+const router = express.Router();
+const { requireAuth, checkUser } = require("../middleware/auth");
 
-// Middleware
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cookieParser());
-app.use(session({
-    secret: 'mubas-assessment-secret-key-2025',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // 24 hours
-}));
+// Apply checkUser middleware to all API routes
+router.use(checkUser);
 
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
-app.use(express.static("public"));
-
-// Database connection pool
-const pool = mysql2.createPool({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "mubas_assessment_db",
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+// Example public API route
+router.get("/", (req, res) => {
+    res.json({ message: "API root works!" });
 });
 
-// Make pool available to all routes
-app.use((req, res, next) => {
-    req.pool = pool;
-    next();
-});
-
-// Middleware
-const { requireAuth, checkUser } = require("./middleware/auth");
-app.use(checkUser);
-
-// Routes
-app.use("/auth", require("./routes/auth"));
-app.use("/admin", require("./routes/admin"));
-app.use("/lecturer", require("./routes/lecturer"));
-app.use("/student", require("./routes/student"));
-app.use("/api", require("./routes/api"));
-
-// Home route
-app.get("/", (req, res) => {
-    if (req.session.user) {
-        switch (req.session.user.role) {
-            case 'admin':
-                res.redirect('/admin/dashboard');
-                break;
-            case 'lecturer':
-                res.redirect('/lecturer/dashboard');
-                break;
-            case 'student':
-                res.redirect('/student/dashboard');
-                break;
-            default:
-                res.render("auth/login", { error: null });
-        }
-    } else {
-        res.render("auth/login", { error: null });
-    }
-});
-
-// Logout route
-app.get("/logout", (req, res) => {
-    req.session.destroy(err => {
-        if (err) console.log(err);
-        res.redirect("/");
+// Example protected API route
+router.get("/secure", requireAuth, (req, res) => {
+    res.json({
+        message: "You are authenticated!",
+        user: req.session.user
     });
 });
 
-// 404 handler
-app.use((req, res) => {
-    res.status(404).send("404 - Page Not Found");
+// Example database query (uses req.pool from app.js)
+router.get("/users", requireAuth, (req, res) => {
+    req.pool.query("SELECT id, email FROM users", (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: "Database error" });
+        }
+        res.json(results);
+    });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`MUBAS Grading System running on port ${PORT}`);
-});
+module.exports = router;

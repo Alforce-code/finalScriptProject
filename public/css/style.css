@@ -21,7 +21,7 @@ body {
 
 /* Header styles */
 header {
-    background-color: #2c3e50;
+    background-color: #25215ed2;
     color: white;
     padding: 1rem 0;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -192,11 +192,12 @@ table tr:hover {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-color: #25215e5d;
+    
 }
 
 .auth-card {
-    background: white;
+    background: #25215e;
     border-radius: 10px;
     padding: 2rem;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
