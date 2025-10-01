@@ -2,154 +2,105 @@ const express = require("express");
 const router = express.Router();
 const { requireAuth, requireRole } = require("../middleware/auth");
 
-router.use(requireAuth);
-router.use(requireRole(['student']));
-
-/**
- * STUDENT DASHBOARD
- */
-router.get("/dashboard", async (req, res) => {
+// Student dashboard
+router.get("/dashboard", requireAuth, requireRole(['student']), async (req, res) => {
     try {
         const studentId = req.session.user.id;
-
-        // Get student info
+        
+        // Get student basic info
         const [students] = await req.pool.promise().query(
             "SELECT * FROM student WHERE registration_number = ?", 
             [studentId]
         );
-        const student = students[0] || {};
-
-        // Get registered modules
-        const [modules] = await req.pool.promise().query(`
-            SELECT m.module_code, m.module_name
-            FROM module m
-            JOIN registration r ON r.module_id = m.module_id
-            WHERE r.registration_number = ?
-        `, [studentId]);
-
-        // Get notices
-        let notices = [];
-        try {
-            const [rows] = await req.pool.promise().query(`
-                SELECT * FROM notices ORDER BY date DESC
-            `);
-            notices = rows || [];
-        } catch (err) {
-            console.error("Error fetching notices:", err);
+        
+        if (students.length === 0) {
+            return res.status(404).render('error', { message: 'Student not found' });
         }
-
-        // Render dashboard
-        res.render("student/dashboard", { 
-            student,
-            modules,
-            notices,
-            error: null
+        
+        const student = students[0];
+        
+        // Get student's class info
+        const [classInfo] = await req.pool.promise().query(
+            `SELECT c.class_name, c.semester, c.academic_year 
+             FROM class c 
+             JOIN student_class_enrollment sce ON c.class_id = sce.class_id 
+             WHERE sce.registration_number = ?`,
+            [studentId]
+        );
+        
+        if (classInfo.length > 0) {
+            student.class_name = classInfo[0].class_name;
+            student.semester = classInfo[0].semester;
+            student.academic_year = classInfo[0].academic_year;
+        }
+        
+        // Get student's enrolled modules
+        const [modules] = await req.pool.promise().query(
+            `SELECT m.module_code, m.module_name, m.credits 
+             FROM module m 
+             JOIN class_module cm ON m.module_code = cm.module_code 
+             JOIN student_class_enrollment sce ON cm.class_id = sce.class_id 
+             WHERE sce.registration_number = ?`,
+            [studentId]
+        );
+        
+        res.render("student/dashboard", {
+            student: student,
+            modules: modules
         });
-
+        
     } catch (error) {
         console.error("Dashboard error:", error);
-        res.render("student/dashboard", { 
-            student: {},
-            modules: [],
-            notices: [], // make sure notices is always defined
-            error: "Error loading dashboard"
-        });
+        res.status(500).render('error', { message: 'Error loading dashboard' });
     }
 });
 
-/**
- * STUDENT PROFILE
- */
-router.get("/profile", async (req, res) => {
+// Student profile
+router.get("/profile", requireAuth, requireRole(['student']), async (req, res) => {
     try {
         const studentId = req.session.user.id;
-
+        
         const [students] = await req.pool.promise().query(
             "SELECT * FROM student WHERE registration_number = ?", 
             [studentId]
         );
-        const student = students[0] || {};
-
-        // Get enrollment info
-        const [enrollment] = await req.pool.promise().query(`
-            SELECT c.*, p.name as program_name
-            FROM class c
-            JOIN student_class_enrollment sce ON c.class_id = sce.class_id
-            JOIN program p ON c.program_id = p.program_id
-            WHERE sce.registration_number = ?
-        `, [studentId]);
-
+        
+        if (students.length === 0) {
+            return res.status(404).render('error', { message: 'Student not found' });
+        }
+        
         res.render("student/profile", {
-            student,
-            enrollment: enrollment[0] || {},
-            error: null
+            student: students[0]
         });
-
+        
     } catch (error) {
-        console.error("Profile error:", error);
-        res.render("student/profile", {
-            student: {},
-            enrollment: {},
-            error: "Error loading profile"
-        });
+        console.error(error);
+        res.status(500).render('error', { message: 'Error loading profile' });
     }
 });
 
-/**
- * STUDENT GRADES
- */
-router.get("/grades", async (req, res) => {
+// Student grades
+router.get("/grades", requireAuth, requireRole(['student']), async (req, res) => {
     try {
         const studentId = req.session.user.id;
-
-        const [grades] = await req.pool.promise().query(`
-            SELECT g.*, m.name as module_name, a.name as assessment_name, a.weight
-            FROM grade g
-            JOIN module m ON g.module_id = m.module_id
-            LEFT JOIN assessment a ON g.assessment_id = a.assessment_id AND g.module_id = a.module_id
-            WHERE g.registration_number = ?
-            ORDER BY m.module_id, g.assessment_id
-        `, [studentId]);
-
-        // Calculate module averages
-        const moduleAverages = {};
-        if (grades && grades.length > 0) {
-            grades.forEach(grade => {
-                if (!moduleAverages[grade.module_id]) {
-                    moduleAverages[grade.module_id] = {
-                        module_name: grade.module_name,
-                        total_score: 0,
-                        total_weight: 0,
-                        count: 0
-                    };
-                }
-                if (grade.score !== null) {
-                    moduleAverages[grade.module_id].total_score += grade.score * ((grade.weight || 100) / 100);
-                    moduleAverages[grade.module_id].total_weight += (grade.weight || 100);
-                    moduleAverages[grade.module_id].count++;
-                }
-            });
-        }
-
-        const averages = Object.values(moduleAverages).map(module => ({
-            module_name: module.module_name,
-            average: module.total_weight > 0 ? (module.total_score / module.total_weight) * 100 : 0,
-            count: module.count
-        }));
-
+        
+        // Get grades with module info
+        const [grades] = await req.pool.promise().query(
+            `SELECT m.module_code, m.module_name, g.coursework_marks, g.exam_marks, g.final_grade 
+             FROM grade g 
+             JOIN module m ON g.module_code = m.module_code 
+             WHERE g.registration_number = ?`,
+            [studentId]
+        );
+        
         res.render("student/grades", {
-            grades: grades || [],
-            averages: averages || [],
-            error: null
+            grades: grades,
+            student: req.session.user
         });
-
+        
     } catch (error) {
-        console.error("Grades error:", error);
-        res.render("student/grades", {
-            grades: [],
-            averages: [],
-            error: "Error loading grades"
-        });
+        console.error(error);
+        res.status(500).render('error', { message: 'Error loading grades' });
     }
 });
 

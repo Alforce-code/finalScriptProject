@@ -6,7 +6,7 @@ const { requireAuth, requireRole } = require("../middleware/auth");
 router.use(requireAuth);
 router.use(requireRole(['admin']));
 
-// Admin dashboard
+// Admin dashboard - NEW VERSION with enhanced data
 router.get("/dashboard", async (req, res) => {
     try {
         // Get counts for dashboard
@@ -15,11 +15,29 @@ router.get("/dashboard", async (req, res) => {
         const [programCount] = await req.pool.promise().query("SELECT COUNT(*) as count FROM program");
         const [moduleCount] = await req.pool.promise().query("SELECT COUNT(*) as count FROM module");
         
+        // Get additional data for charts
+        const [bitStudents] = await req.pool.promise().query(`
+            SELECT COUNT(*) as count FROM student s
+            JOIN student_class_enrollment sce ON s.registration_number = sce.registration_number
+            JOIN class c ON sce.class_id = c.class_id
+            WHERE c.program_id = 'PBIT'
+        `);
+        
+        const [bisStudents] = await req.pool.promise().query(`
+            SELECT COUNT(*) as count FROM student s
+            JOIN student_class_enrollment sce ON s.registration_number = sce.registration_number
+            JOIN class c ON sce.class_id = c.class_id
+            WHERE c.program_id = 'PBIS'
+        `);
+        
         res.render("admin/dashboard", {
             studentCount: studentCount[0].count,
             lecturerCount: lecturerCount[0].count,
             programCount: programCount[0].count,
-            moduleCount: moduleCount[0].count
+            moduleCount: moduleCount[0].count,
+            bitStudents: bitStudents[0].count,
+            bisStudents: bisStudents[0].count,
+            user: req.session.user
         });
     } catch (error) {
         console.error(error);
@@ -27,21 +45,32 @@ router.get("/dashboard", async (req, res) => {
             studentCount: 0,
             lecturerCount: 0,
             programCount: 0,
-            moduleCount: 0
+            moduleCount: 0,
+            bitStudents: 0,
+            bisStudents: 0,
+            user: req.session.user
         });
     }
 });
 
-// Manage users
+// NEW: Enhanced manage users page with AJAX support
 router.get("/manage-users", async (req, res) => {
     try {
         const [students] = await req.pool.promise().query("SELECT * FROM student");
         const [lecturers] = await req.pool.promise().query("SELECT * FROM lecturer");
         
-        res.render("admin/manage-users", { students, lecturers });
+        res.render("admin/manage-users", { 
+            students, 
+            lecturers,
+            user: req.session.user
+        });
     } catch (error) {
         console.error(error);
-        res.render("admin/manage-users", { students: [], lecturers: [] });
+        res.render("admin/manage-users", { 
+            students: [], 
+            lecturers: [],
+            user: req.session.user
+        });
     }
 });
 
@@ -52,69 +81,33 @@ router.get("/manage-programs", async (req, res) => {
         const [classes] = await req.pool.promise().query("SELECT * FROM class");
         const [modules] = await req.pool.promise().query("SELECT * FROM module");
         
-        res.render("admin/manage-programs", { programs, classes, modules });
+        res.render("admin/manage-programs", { 
+            programs, 
+            classes, 
+            modules,
+            user: req.session.user
+        });
     } catch (error) {
         console.error(error);
-        res.render("admin/manage-programs", { programs: [], classes: [], modules: [] });
+        res.render("admin/manage-programs", { 
+            programs: [], 
+            classes: [], 
+            modules: [],
+            user: req.session.user
+        });
     }
 });
 
-// Reports
+// NEW: Enhanced reports page with chart support
 router.get("/reports", async (req, res) => {
     try {
-        // Get students repeating the year (failed 2+ modules)
-        const [repeatingStudents] = await req.pool.promise().query(`
-            SELECT s.registration_number, s.first_name, s.last_name, 
-                   COUNT(CASE WHEN g.score < 50 THEN 1 END) as failed_count
-            FROM student s
-            JOIN grade g ON s.registration_number = g.registration_number
-            GROUP BY s.registration_number, s.first_name, s.last_name
-            HAVING failed_count >= 2
-        `);
-        
-        // Get students who passed DMS but failed OS2
-        const [dmsPassOsFail] = await req.pool.promise().query(`
-            SELECT s.registration_number, s.first_name, s.last_name
-            FROM student s
-            WHERE EXISTS (
-                SELECT 1 FROM grade g 
-                JOIN assessment a ON g.assessment_id = a.assessment_id AND g.module_id = a.module_id
-                WHERE g.registration_number = s.registration_number 
-                AND g.module_id = 'DMS-301'
-                AND g.score >= 50
-            )
-            AND EXISTS (
-                SELECT 1 FROM grade g 
-                JOIN assessment a ON g.assessment_id = a.assessment_id AND g.module_id = a.module_id
-                WHERE g.registration_number = s.registration_number 
-                AND g.module_id = 'OPS-302'
-                AND g.score < 50
-            )
-        `);
-        
-        // Compare performance of females vs males in BIT and BIS for DSA-301
-        const [genderPerformance] = await req.pool.promise().query(`
-            SELECT s.gender, p.program_id, AVG(g.score) as avg_score
-            FROM student s
-            JOIN student_class_enrollment sce ON s.registration_number = sce.registration_number
-            JOIN class c ON sce.class_id = c.class_id
-            JOIN program p ON c.program_id = p.program_id
-            JOIN grade g ON s.registration_number = g.registration_number
-            WHERE g.module_id = 'DSA-301'
-            GROUP BY s.gender, p.program_id
-        `);
-        
         res.render("admin/reports", {
-            repeatingStudents,
-            dmsPassOsFail,
-            genderPerformance
+            user: req.session.user
         });
     } catch (error) {
         console.error(error);
         res.render("admin/reports", {
-            repeatingStudents: [],
-            dmsPassOsFail: [],
-            genderPerformance: []
+            user: req.session.user
         });
     }
 });

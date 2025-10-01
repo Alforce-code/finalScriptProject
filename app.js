@@ -50,37 +50,64 @@ app.use("/lecturer", require("./routes/lecturer"));
 app.use("/student", require("./routes/student"));
 app.use("/api", require("./routes/api"));
 
-// Home route
-app.get("/", (req, res) => {
+// ✅ FIXED: Single root route - Remove duplicate routes
+app.get('/', (req, res) => {
+    // If user is already logged in, redirect to their dashboard
     if (req.session.user) {
         switch (req.session.user.role) {
             case 'admin': return res.redirect('/admin/dashboard');
             case 'lecturer': return res.redirect('/lecturer/dashboard');
             case 'student': return res.redirect('/student/dashboard');
-            default: return res.render("auth/login", { error: null });
+            default: return res.render("landing");
         }
     }
-    res.render("auth/login", { error: null });
+    // If not logged in, show the landing page
+    res.render("landing");
 });
 
-// ✅ Logout route
+// ✅ FIXED: Logout route - redirect to root (landing page)
 app.get("/logout", (req, res) => {
     req.session.destroy(err => {
         if (err) {
-            console.log('Logout error:', err);s
+            console.log('Logout error:', err);
         }
-        res.clearCookie('connect.sid'); // remove session cookie
-        res.redirect("/"); // redirect to login/home
+        res.clearCookie('connect.sid');
+        res.redirect("/"); // ✅ FIXED: Redirect to root (landing page) after logout
     });
 });
 
-// Simple 404 handler
+// ✅ FIXED: Simple 404 handler
 app.use((req, res) => {
-    res.status(404).render('404'); // optional: use a 404.ejs page
+    res.status(404).send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Page Not Found</title>
+            <style>
+                body { 
+                    font-family: Arial, sans-serif; 
+                    text-align: center; 
+                    padding: 50px; 
+                    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+                    color: white;
+                }
+                h1 { font-size: 48px; margin-bottom: 20px; }
+                a { color: #4fc3f7; text-decoration: none; }
+            </style>
+        </head>
+        <body>
+            <h1>404</h1>
+            <h2>Page Not Found</h2>
+            <p>The page you are looking for doesn't exist.</p>
+            <a href="/">Back to Home</a>
+        </body>
+        </html>
+    `);
 });
 
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`MUBAS Grading System running on port ${PORT}`);
+    console.log(`Landing page: http://localhost:${PORT}`);
 });
