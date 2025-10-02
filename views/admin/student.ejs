@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Students - MUBAS Grading System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .card {
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            border: 1px solid #e3e6f0;
+        }
+        .table-responsive {
+            max-height: 500px;
+        }
+        .btn-action {
+            margin: 2px;
+        }
+        .gender-male { color: #0d6efd; }
+        .gender-female { color: #dc3545; }
+        .badge-enrolled { background-color: #198754; }
+        .badge-not-enrolled { background-color: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 text-gray-800"><i class="fas fa-user-graduate me-2"></i>Manage Students</h1>
+            <a href="/admin/dashboard" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div class="row">
+            <!-- Add Student Form -->
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-user-plus me-2"></i>Add New Student
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="/admin/add-student" method="POST">
+                            <div class="mb-3">
+                                <label for="registration_number" class="form-label">Registration Number *</label>
+                                <input type="text" class="form-control" id="registration_number" name="registration_number" 
+                                       placeholder="e.g., BIS/20/SS/001" required maxlength="25">
+                            </div>
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">First Name *</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" 
+                                       placeholder="Enter first name" required maxlength="20">
+                            </div>
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" 
+                                       placeholder="Enter last name" required maxlength="20">
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       placeholder="student@mubas.ac.mw" required maxlength="100">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Gender *</label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="gender" id="gender_male" value="M" required>
+                                        <label class="form-check-label" for="gender_male">
+                                            <i class="fas fa-mars gender-male me-1"></i>Male
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="gender" id="gender_female" value="F" required>
+                                        <label class="form-check-label" for="gender_female">
+                                            <i class="fas fa-venus gender-female me-1"></i>Female
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="fas fa-save me-2"></i>Add Student
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Enrollment Form -->
+                <div class="card mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-bookmark me-2"></i>Enroll Student in Class
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="/admin/enroll-student" method="POST">
+                            <div class="mb-3">
+                                <label for="enroll_registration_number" class="form-label">Student *</label>
+                                <select class="form-select" id="enroll_registration_number" name="registration_number" required>
+                                    <option value="">Select Student</option>
+                                    <% students.forEach(function(student) { %>
+                                        <option value="<%= student.registration_number %>">
+                                            <%= student.registration_number %> - <%= student.first_name %> <%= student.last_name %>
+                                        </option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="class_id" class="form-label">Class *</label>
+                                <select class="form-select" id="class_id" name="class_id" required>
+                                    <option value="">Select Class</option>
+                                    <% if (typeof obj !== 'undefined' && obj['class'] && Array.isArray(obj['class'])) { %>
+                                        <% obj['class'].forEach(function(cls) { %>
+                                            <option value="<%= cls.class_id %>">
+                                                <%= cls.class_id %> (<%= cls.program_id %> - Year <%= cls.year %>)
+                                            </option>
+                                        <% }); %>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-info w-100">
+                                <i class="fas fa-user-plus me-2"></i>Enroll Student
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Students List -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-list me-2"></i>Students List
+                            <span class="badge bg-light text-dark ms-2"><%= students.length %> students</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <% if (students.length === 0) { %>
+                            <div class="text-center py-4">
+                                <i class="fas fa-user-graduate fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No students found. Add your first student using the form.</p>
+                            </div>
+                        <% } else { %>
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Reg Number</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Gender</th>
+                                            <th>Enrolled Classes</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% students.forEach(function(student) { 
+                                            var studentEnrollments = [];
+                                            if (typeof enrollments !== 'undefined') {
+                                                studentEnrollments = enrollments.filter(function(e) {
+                                                    return e.registration_number === student.registration_number;
+                                                });
+                                            }
+                                        %>
+                                            <tr>
+                                                <td><strong><%= student.registration_number %></strong></td>
+                                                <td><%= student.first_name %> <%= student.last_name %></td>
+                                                <td>
+                                                    <a href="mailto:<%= student.email %>" class="text-decoration-none">
+                                                        <%= student.email %>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <% if (student.gender === 'M') { %>
+                                                        <i class="fas fa-mars gender-male" title="Male"></i>
+                                                    <% } else { %>
+                                                        <i class="fas fa-venus gender-female" title="Female"></i>
+                                                    <% } %>
+                                                    <%= student.gender %>
+                                                </td>
+                                                <td>
+                                                    <% if (studentEnrollments.length > 0) { %>
+                                                        <% studentEnrollments.forEach(function(enrollment) { %>
+                                                            <span class="badge badge-enrolled me-1" title="<%= enrollment.program_id %> - Year <%= enrollment.year %>">
+                                                                <%= enrollment.class_id %>
+                                                            </span>
+                                                        <% }); %>
+                                                    <% } else { %>
+                                                        <span class="badge badge-not-enrolled">Not Enrolled</span>
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <!-- Edit Button -->
+                                                        <button type="button" class="btn btn-warning btn-sm btn-action" 
+                                                                data-bs-toggle="modal" data-bs-target="#editStudentModal"
+                                                                data-reg="<%= student.registration_number %>"
+                                                                data-first="<%= student.first_name %>"
+                                                                data-last="<%= student.last_name %>"
+                                                                data-email="<%= student.email %>"
+                                                                data-gender="<%= student.gender %>">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <!-- Delete Button -->
+                                                        <form action="/admin/delete-student" method="POST" class="d-inline">
+                                                            <input type="hidden" name="registration_number" value="<%= student.registration_number %>">
+                                                            <button type="submit" class="btn btn-danger btn-sm btn-action" 
+                                                                    onclick="return confirm('Are you sure you want to delete <%= student.first_name %> <%= student.last_name %>? This will also delete all their grades and enrollments.')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Current Enrollments -->
+                <div class="card mt-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-book-open me-2"></i>Current Enrollments
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <% if (typeof enrollments === 'undefined' || enrollments.length === 0) { %>
+                            <div class="text-center py-3">
+                                <p class="text-muted">No student enrollments found.</p>
+                            </div>
+                        <% } else { %>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Student</th>
+                                            <th>Class</th>
+                                            <th>Program</th>
+                                            <th>Year</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% enrollments.forEach(function(enrollment) { %>
+                                            <tr>
+                                                <td><%= enrollment.registration_number %></td>
+                                                <td><%= enrollment.class_id %></td>
+                                                <td><%= enrollment.program_id %></td>
+                                                <td><%= enrollment.year %></td>
+                                                <td>
+                                                    <form action="/admin/remove-enrollment" method="POST" class="d-inline">
+                                                        <input type="hidden" name="registration_number" value="<%= enrollment.registration_number %>">
+                                                        <input type="hidden" name="class_id" value="<%= enrollment.class_id %>">
+                                                        <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                                                onclick="return confirm('Remove <%= enrollment.registration_number %> from <%= enrollment.class_id %>?')">
+                                                            <i class="fas fa-times"></i> Remove
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div class="modal fade" id="editStudentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Student</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="/admin/update-student" method="POST">
+                    <div class="modal-body">
+                        <input type="hidden" id="edit_registration_number" name="registration_number">
+                        <div class="mb-3">
+                            <label for="edit_first_name" class="form-label">First Name *</label>
+                            <input type="text" class="form-control" id="edit_first_name" name="first_name" required maxlength="20">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_last_name" class="form-label">Last Name *</label>
+                            <input type="text" class="form-control" id="edit_last_name" name="last_name" required maxlength="20">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="edit_email" name="email" required maxlength="100">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Gender *</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" id="edit_gender_male" value="M" required>
+                                    <label class="form-check-label" for="edit_gender_male">Male</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" id="edit_gender_female" value="F" required>
+                                    <label class="form-check-label" for="edit_gender_female">Female</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning">Update Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Edit Modal Handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const editModal = document.getElementById('editStudentModal');
+            if (editModal) {
+                editModal.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget;
+                    const regNumber = button.getAttribute('data-reg');
+                    const firstName = button.getAttribute('data-first');
+                    const lastName = button.getAttribute('data-last');
+                    const email = button.getAttribute('data-email');
+                    const gender = button.getAttribute('data-gender');
+
+                    document.getElementById('edit_registration_number').value = regNumber;
+                    document.getElementById('edit_first_name').value = firstName;
+                    document.getElementById('edit_last_name').value = lastName;
+                    document.getElementById('edit_email').value = email;
+                    
+                    // Set gender radio button
+                    document.getElementById('edit_gender_male').checked = (gender === 'M');
+                    document.getElementById('edit_gender_female').checked = (gender === 'F');
+                });
+            }
+
+            // Auto-dismiss alerts after 5 seconds
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

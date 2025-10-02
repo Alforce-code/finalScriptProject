@@ -84,19 +84,99 @@
     button[type="submit"]:hover:enabled { background-color: #0056b3; }
     button:disabled { background-color: #ccc !important; cursor: not-allowed; opacity: 0.6; }
     button.delete-btn { background-color: #dc3545; color: white; }
-    button.delete-btn:hover { background-color: #a71d2a; }
+    button.delete-btn:hover:enabled { background-color: #a71d2a; }
 
     input[type="number"] { width: 60px; padding: 5px; }
     tfoot td { border-top: 2px solid #333; font-size: 16px; font-weight: bold; }
+
+    .alert {
+        padding: 15px 20px;
+        margin: 20px 0;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 500;
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .alert-info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+    }
+
+    #btn {
+        display: inline-block;
+        margin-bottom: 20px;
+        padding: 10px 15px;
+        background-color: #6c757d;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
 </style>
 <!-- importing the header -->
 <%- include('../partials/header', {title: 'Lecturer Manage Grade'}) %>
 
 <!-- the back button-->
-<a href="/lecturer/dashboard"> Back</a>
+<a href="/lecturer/dashboard" id="btn"> Back</a>
 
 <div class="card">
     <h1>Manage Grades</h1>
+
+    <!-- Success/Error Messages -->
+    <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert-success">
+            <% if (success === 'grade_deleted') { %>
+                ✓ Grade deleted successfully!
+            <% } else if (success === 'grade_updated') { %>
+                ✓ Grade updated successfully!
+            <% } %>
+        </div>
+    <% } %>
+
+    <% if (typeof error !== 'undefined' && error && error !== 'Error loading manage grades') { %>
+        <div class="alert alert-error">
+            <% if (error === 'delete_failed') { %>
+                ✗ Failed to delete grade. Please try again.
+            <% } else if (error === 'update_failed') { %>
+                ✗ Failed to update grade. Please try again.
+            <% } else { %>
+                ✗ An error occurred. Please try again.
+            <% } %>
+        </div>
+    <% } %>
+
+    <% if (typeof info !== 'undefined' && info) { %>
+        <div class="alert alert-info">
+            <% if (info === 'grade_not_found') { %>
+                ℹ Grade not found, nothing to delete.
+            <% } %>
+        </div>
+    <% } %>
 
     <!-- Module Selection -->
     <form method="GET" action="/lecturer/manage-grades" class="module-select">
@@ -123,6 +203,7 @@
             <% students.forEach(s => { %>
                 <% assessments.forEach((a, idx) => {
                     const grade = s.grades.find(g => g.assessment_id === a.assessment_id) || {};
+                    const hasGrade = grade.score !== undefined && grade.score !== null;
                 %>
                 <tr>
                     <td><%= s.first_name %> <%= s.last_name %> (<%= s.registration_number %>)</td>
@@ -135,6 +216,8 @@
                                 value="<%= grade.score || '' %>"
                                 placeholder="Enter score"
                                 required
+                                min="0"
+                                max="100"
                                 class="grade-input"
                                 data-original="<%= grade.score || '' %>"
                             />
@@ -153,12 +236,16 @@
                     <% } %>
 
                     <td>
-                        <form method="POST" action="/lecturer/delete-grade">
-                            <input type="hidden" name="registrationNumber" value="<%= s.registration_number %>" />
-                            <input type="hidden" name="moduleId" value="<%= selectedModule %>" />
-                            <input type="hidden" name="assessmentId" value="<%= a.assessment_id %>" />
-                            <button type="submit" class="delete-btn">Delete</button>
-                        </form>
+                        <% if (hasGrade) { %>
+                            <form method="POST" action="/lecturer/delete-grade" onsubmit="return confirm('Are you sure you want to delete this grade?')">
+                                <input type="hidden" name="registrationNumber" value="<%= s.registration_number %>" />
+                                <input type="hidden" name="moduleId" value="<%= selectedModule %>" />
+                                <input type="hidden" name="assessmentId" value="<%= a.assessment_id %>" />
+                                <button type="submit" class="delete-btn">Delete</button>
+                            </form>
+                        <% } else { %>
+                            <button class="delete-btn" disabled title="No grade to delete">Delete</button>
+                        <% } %>
                     </td>
                 </tr>
                 <% }) %>
@@ -186,7 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const form = input.closest(".grade-form");
         const button = form.querySelector(".save-btn");
 
-        // Initial state
+        // Initial state - disable if there's already a value
         button.disabled = input.value !== "";
 
         // Enable button only when changed
@@ -199,6 +286,16 @@ document.addEventListener("DOMContentLoaded", () => {
             button.disabled = true;
             input.dataset.original = input.value;
         });
+    });
+
+    // Auto-hide alerts after 5 seconds
+    const alerts = document.querySelectorAll(".alert");
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.style.transition = "opacity 0.5s ease-out";
+            alert.style.opacity = "0";
+            setTimeout(() => alert.remove(), 500);
+        }, 5000);
     });
 });
 </script>

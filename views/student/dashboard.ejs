@@ -1,676 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DASHMIN - Admin Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        /* Your existing CSS styles remain the same */
-
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        :root {
-            --primary: #4e73df;
-            --secondary: #858796;
-            --success: #1cc88a;
-            --info: #36b9cc;
-            --warning: #f6c23e;
-            --danger: #e74a3b;
-            --light: #f8f9fc;
-            --dark: #5a5c69;
-            --sidebar-width: 250px;
-        }
-
-        body {
-            display: flex;
-            background-color: #f8f9fc;
-            color: #333;
-        }
-
-        /* All your existing CSS styles... */
-        /* ... (keep all your existing CSS styles) ... */
-
-        /* Add these new styles for better user experience */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 4px;
-            color: white;
-            z-index: 3000;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .notification.success {
-            background-color: var(--success);
-        }
-
-        .notification.error {
-            background-color: var(--danger);
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mubas Grading System</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* Your existing CSS remains the same */
+body {margin:0;font-family:Arial,sans-serif;background:#f5f7fa;color:#333;}
+.header {background:#003366;color:#fff;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;}
+.header .logo {display:flex;align-items:center;}
+.header .logo img {height:40px;margin-right:10px;}
+.header .user-info {display:flex;align-items:center;gap:10px;}
+.header .user-info img {width:40px;height:40px;border-radius:50%;border:2px solid #fff;}
+.navbar {background:#004c99;overflow-x:auto;}
+.navbar ul {display:flex;list-style:none;margin:0;padding:0;}
+.navbar li {padding:12px 20px;color:#fff;cursor:pointer;}
+.navbar li:hover,.navbar li.active {background:#0059b3;}
+.dashboard {display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;padding:20px;}
+.card {background:#fff;border-radius:8px;padding:15px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+.card h3 {margin:0 0 10px;font-size:16px;color:#555;}
+.card .value {font-size:20px;font-weight:bold;}
+.card-blue {border-left:5px solid #007bff;}
+.card-red {border-left:5px solid #d9534f;}
+.card-green {border-left:5px solid #5cb85c;}
+.quick-links {background:#fff;margin:0 20px 20px;padding:15px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+.quick-links a {margin-right:20px;font-weight:bold;}
+.content {display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;padding:20px;}
+.section {background:#fff;border-radius:8px;padding:15px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+.section h4 {margin:0 0 10px;color:#555;}
+.table {width:100%;border-collapse:collapse;}
+.table tr {border-bottom:1px solid #eee;}
+.table td {padding:8px;}
+.notice {margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #eee;}
+.notice .date {color:#d9534f;font-size:12px;margin-bottom:4px;}
+.notice b {display:block;}
+.footer {background:#003366;color:#fff;text-align:center;padding:10px;margin-top:20px;font-size:14px;}
+</style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h3>DASHMIN</h3>
-        </div>
-        <div class="user-info p-3">
-            <div>
-                <h4><%= user.firstName %> <%= user.lastName %></h4>
-                <p style="color: rgba(255,255,255,0.7);">Administrator</p>
-            </div>
-        </div>
-        <div class="sidebar-menu">
-            <ul>
-                <li><a href="/admin/dashboard" class="active"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
-                <li><a href="/admin/manage-users"><i class="fas fa-users"></i> <span>Manage Users</span></a></li>
-                <li><a href="/admin/manage-programs"><i class="fas fa-graduation-cap"></i> <span>Manage Programs</span></a></li>
-                <li><a href="/admin/reports"><i class="fas fa-chart-bar"></i> <span>Reports</span></a></li>
-                <li><a href="/auth/register"><i class="fas fa-user-plus"></i> <span>Register User</span></a></li>
-                <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
-            </ul>
-        </div>
-    </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="topbar">
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search...">
-            </div>
-            <div class="user-info">
-                <i class="fas fa-envelope"></i>
-                <i class="fas fa-bell"></i>
-                <div class="user-details">
-                    <span>Admin</span>
-                </div>
-            </div>
-        </div>
+<!-- Header -->
+<div class="header">
+  <div class="logo">
+    <img src="/images/mubas_logo.png" alt="Logo">
+    <span>MUBAS GRADING SYSTEM</span>
+  </div>
+  <div class="user-info">
+    <span style="color:#05d72f;">
+      Welcome <%= typeof student !== 'undefined' ? (student.first_name || "N/A") : "Student" %> 
+      <%= typeof student !== 'undefined' ? (student.last_name || "") : "" %>
+    </span>
+    <img src="<%= '/images/—Pngtree—illustration of graduation cap on_20093403.png' %>" alt="Avatar">
+  </div>
+</div>
 
-        <!-- Dashboard Content -->
-        <div id="dashboard-section">
-            <h1>Admin Dashboard</h1>
-            <p>Good to see you, <%= user.firstName %>!</p>
-            
-            <!-- Dashboard Cards -->
-            <div class="dashboard-cards">
-                <div class="card">
-                    <h3>Students</h3>
-                    <div class="number"><%= studentCount %></div>
-                </div>
-                <div class="card success">
-                    <h3>Lecturers</h3>
-                    <div class="number"><%= lecturerCount %></div>
-                </div>
-                <div class="card info">
-                    <h3>Programs</h3>
-                    <div class="number"><%= programCount %></div>
-                </div>
-                <div class="card warning">
-                    <h3>Modules</h3>
-                    <div class="number"><%= moduleCount %></div>
-                </div>
-            </div>
+<!-- Navbar -->
+<div class="navbar">
+  <ul>
+    <li class="active"><a href="/student/dashboard" style="text-decoration: none; color: white;"><i class="fas fa-user-circle"></i> My account</a></li>
+    <li><a href="/student/profile" style="text-decoration: none; color: white;"><i class="fas fa-book" style="text-decoration: none; color: white;"></i> Profile</a></li>
+    <li><a href="/student/grades" style="text-decoration: none;color: white;"><i class="fas fa-book" style="text-decoration: none; color: white;"></i> All Grades</a></li>
+    <li><a href="/student/grades" style="text-decoration: none; color: white;"><i class="fas fa-book" style="text-decoration: none; color: white;"></i> Exam Results</a></li>
 
-            <!-- Charts and Data Section -->
-            <div class="charts-container">
-                <div class="chart-box">
-                    <h2>Student Performance Overview</h2>
-                    <canvas id="performanceChart"></canvas>
-                </div>
-                <div class="table-box">
-                    <h2>Top Performing Students</h2>
-                    <table id="topStudentsTable">
-                        <thead>
-                            <tr>
-                                <th>Student</th>
-                                <th>Average Score</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Will be populated by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+    <li><a href="/logout" style="margin-left:10px;font-size: 20px; ;padding-left: 570px;  color:red; border-radius:4px; text-decoration:none;"> <i class="fas fa-sign-out-alt"></i>Logout</a></li>
+  </ul>
+</div>
 
-            <!-- System Overview Chart -->
-            <div class="chart-container">
-                <h2>System Overview</h2>
-                <canvas id="systemOverviewChart" width="400" height="200"></canvas>
-            </div>
-            
-            <!-- Additional Charts -->
-            <div class="charts-container">
-                <div class="chart-box">
-                    <h2>Program Distribution</h2>
-                    <canvas id="programDistributionChart"></canvas>
-                </div>
-                <div class="chart-box">
-                    <h2>Gender Distribution</h2>
-                    <canvas id="genderDistributionChart"></canvas>
-                </div>
-            </div>
+<!-- Dashboard cards -->
+<div class="dashboard">
+  <div class="card card-blue">
+    <h3>Account Balance</h3>
+    <div class="value">MK2000</div>
+  </div>
+  <div class="card card-red">
+    <h3>Registration status</h3>
+    <div class="value"><%= typeof student !== 'undefined' ? (student.class_name || "BIS3") : "BIS3" %></div>
+    <div>Registered (<%= typeof student !== 'undefined' ? (student.registration_date || "02/July/2025 -Closed") : "02/July/2025 -Closed" %>)</div>
+  </div>
+  <div class="card card-green">
+    <h3>Registration period (Semester 2)</h3>
+    <div class="value"><%= typeof student !== 'undefined' ? (student.reg_period_start || "") : "" %> <%= typeof student !== 'undefined' ? (student.reg_period_end || "") : "" %></div>
+    <div style="color:#05d72f;"><%= typeof student !== 'undefined' ? (student.registration_status || "02/03/2025-10/04/2025") : "02/03/2025-10/04/2025" %></div>
+  </div>
+</div>
 
-            <!-- Quick Actions -->
-            <div class="table-container">
-                <h2>Quick Actions</h2>
-                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                    <a href="/auth/register" class="btn">Register New User</a>
-                    <a href="/admin/manage-users" class="btn">Manage Users</a>
-                    <a href="/admin/manage-programs" class="btn">Manage Programs</a>
-                    <a href="/admin/reports" class="btn">View Reports</a>
-                </div>
-            </div>
-        </div>
-    </div>
+<!-- Quick links -->
+<div class="quick-links">
+  <a href="/student/grades" style="text-decoration: none;"> <i class="fas fa-info-circle"></i>  Examination results available</a>
+</div>
 
-    <!-- Add Student Modal -->
-    <div class="modal" id="addStudentModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Add New Student</h3>
-                <span class="close">&times;</span>
-            </div>
-            <form id="studentForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="studentFirstName">First Name *</label>
-                        <input type="text" id="studentFirstName" name="firstName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="studentLastName">Last Name *</label>
-                        <input type="text" id="studentLastName" name="lastName" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="studentEmail">Email *</label>
-                    <input type="email" id="studentEmail" name="email" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="studentRegNumber">Registration Number *</label>
-                    <input type="text" id="studentRegNumber" name="registrationNumber" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="studentGender">Gender *</label>
-                    <select id="studentGender" name="gender" required>
-                        <option value="">Select Gender</option>
-                        <option value="M">Male</option>
-                        <option value="F">Female</option>
-                    </select>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn" id="cancelStudentBtn">Cancel</button>
-                    <button type="submit" class="btn btn-success" id="saveStudentBtn">
-                        <span id="saveStudentBtnText">Save Student</span>
-                        <div class="loading" id="saveStudentLoading" style="display: none;"></div>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+<!-- Content sections -->
+<div class="content">
 
-    <!-- Add Lecturer Modal -->
-    <div class="modal" id="addLecturerModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Add New Lecturer</h3>
-                <span class="close">&times;</span>
-            </div>
-            <form id="lecturerForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="lecturerFirstName">First Name *</label>
-                        <input type="text" id="lecturerFirstName" name="firstName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="lecturerLastName">Last Name *</label>
-                        <input type="text" id="lecturerLastName" name="lastName" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="lecturerEmail">Email *</label>
-                    <input type="email" id="lecturerEmail" name="email" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="lecturerId">Lecturer ID *</label>
-                    <input type="text" id="lecturerId" name="lecturerId" required>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn" id="cancelLecturerBtn">Cancel</button>
-                    <button type="submit" class="btn btn-success" id="saveLecturerBtn">
-                        <span id="saveLecturerBtnText">Save Lecturer</span>
-                        <div class="loading" id="saveLecturerLoading" style="display: none;"></div>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+  <!-- Calendar -->
+  <div class="section">
+    <h4>Calendar of Events</h4>
+    <table class="table" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+      <thead>
+        <tr style="background:#f0f0f0;">
+          <th style="padding: 8px; text-align:left;"></th>
+          <th style="padding: 8px; text-align:left;">Event Name</th>
+          <th style="padding: 8px; text-align:left;">Date</th>
+          <th style="padding: 8px; text-align:left;">Location</th>
+          <th style="padding: 8px; text-align:left;">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Orientation Day</td>
+          <td>2026-01-(26-28)</td>
+          <td>Comesa Hall</td>
+          <td>Welcome new students and briefing.</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Sports Day</td>
+          <td>2026-03-05</td>
+          <td>MUBAS Ground</td>
+          <td>Annual sports competitions.</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>End of Semester 3 Exams</td>
+          <td>2025-10-15</td>
+          <td>Various Classrooms</td>
+          <td>Exams for Semester 2 modules.</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Graduation Ceremony</td>
+          <td>2025-10-25</td>
+          <td>MUBAS Ground</td>
+          <td>Graduating students' ceremony.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-    <script>
-        // Database API endpoints
-        const API_BASE = '/api';
-        const API_ENDPOINTS = {
-            dashboard: `${API_BASE}/dashboard`,
-            students: `${API_BASE}/students`,
-            lecturers: `${API_BASE}/lecturers`,
-            modules: `${API_BASE}/modules`,
-            grades: `${API_BASE}/grades`,
-            reports: `${API_BASE}/reports`
-        };
+  <!-- Modules table -->
+  <div class="section">
+    <h4><i class="fas fa-book"></i> Modules to attend - Semester 2</h4>
+    <% if (modules && modules.length > 0) { %>
+      <table class="table">
+        <% modules.forEach((m, i) => { %>
+          <tr>
+            <td><%= i + 1 %></td>
+            <td><%= m.module_code %> <%= m.module_name %></td>
+          </tr>
+        <% }) %>
+      </table>
+    <% } else { %>
+      <p>No registered modules.</p>
+    <% } %>
+  </div>
+</div>
 
-        // Global variables
-        let currentStudents = [];
-        let currentLecturers = [];
-
-        // DOM Elements
-        const addStudentModal = document.getElementById('addStudentModal');
-        const addLecturerModal = document.getElementById('addLecturerModal');
-        const closeModals = document.querySelectorAll('.close');
-        const cancelStudentBtn = document.getElementById('cancelStudentBtn');
-        const cancelLecturerBtn = document.getElementById('cancelLecturerBtn');
-        const studentForm = document.getElementById('studentForm');
-        const lecturerForm = document.getElementById('lecturerForm');
-
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
-            loadDashboardData();
-            initializeCharts();
-            setupEventListeners();
-        });
-
-        // Setup event listeners
-        function setupEventListeners() {
-            // Modal event listeners
-            closeModals.forEach(close => {
-                close.addEventListener('click', function() {
-                    this.closest('.modal').style.display = 'none';
-                    resetForms();
-                });
-            });
-            
-            cancelStudentBtn.addEventListener('click', () => {
-                addStudentModal.style.display = 'none';
-                resetForms();
-            });
-            
-            cancelLecturerBtn.addEventListener('click', () => {
-                addLecturerModal.style.display = 'none';
-                resetForms();
-            });
-            
-            studentForm.addEventListener('submit', handleStudentFormSubmit);
-            lecturerForm.addEventListener('submit', handleLecturerFormSubmit);
-            
-            // Close modals when clicking outside
-            window.addEventListener('click', function(event) {
-                if (event.target.classList.contains('modal')) {
-                    event.target.style.display = 'none';
-                    resetForms();
-                }
-            });
-        }
-
-        // Reset form fields
-        function resetForms() {
-            studentForm.reset();
-            lecturerForm.reset();
-        }
-
-        // Show notification
-        function showNotification(message, type = 'success') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        }
-
-        // Load dashboard data from database
-        async function loadDashboardData() {
-            try {
-                const response = await fetch(API_ENDPOINTS.dashboard);
-                const data = await response.json();
-                
-                initializeCharts(data.chartData);
-                loadTopStudents(data.topStudents);
-                
-            } catch (error) {
-                console.error('Error loading dashboard data:', error);
-                initializeCharts({
-                    bitStudents: 120,
-                    bisStudents: 150,
-                    lecturers: 15,
-                    modulesCount: 25,
-                    modules: ['DMS-301', 'DSA-301', 'WEB-301', 'OPS-301', 'FIN-301'],
-                    averageScores: [65, 72, 68, 58, 63]
-                });
-            }
-        }
-
-        // Initialize charts with real data
-        function initializeCharts(chartData) {
-            // System Overview Chart (Pie Chart)
-            const systemCtx = document.getElementById('systemOverviewChart').getContext('2d');
-            new Chart(systemCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['BIT Students', 'BIS Students', 'Lecturers', 'Modules'],
-                    datasets: [{
-                        data: [
-                            chartData.bitStudents || 120,
-                            chartData.bisStudents || 150, 
-                            chartData.lecturers || 15, 
-                            chartData.modulesCount || 25
-                        ],
-                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-
-            // Performance Chart
-            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
-            new Chart(performanceCtx, {
-                type: 'bar',
-                data: {
-                    labels: chartData.modules || ['DMS-301', 'DSA-301', 'WEB-301', 'OPS-301', 'FIN-301'],
-                    datasets: [{
-                        label: 'Average Score',
-                        data: chartData.averageScores || [65, 72, 68, 58, 63],
-                        backgroundColor: '#4e73df',
-                        borderColor: '#4e73df',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100
-                        }
-                    }
-                }
-            });
-
-            // Program Distribution Chart
-            const programCtx = document.getElementById('programDistributionChart').getContext('2d');
-            new Chart(programCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['BIT', 'BIS'],
-                    datasets: [{
-                        data: [chartData.bitStudents || 120, chartData.bisStudents || 150],
-                        backgroundColor: ['#FF6384', '#36A2EB']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-
-            // Gender Distribution Chart
-            const genderCtx = document.getElementById('genderDistributionChart').getContext('2d');
-            new Chart(genderCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['Male', 'Female'],
-                    datasets: [{
-                        data: [65, 35],
-                        backgroundColor: ['#4e73df', '#e74a3b']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-        }
-
-        // Load top students table
-        function loadTopStudents(students) {
-            if (!students) {
-                students = [
-                    { name: 'John Doe', averageScore: '85.5' },
-                    { name: 'Jane Smith', averageScore: '82.3' },
-                    { name: 'Mike Johnson', averageScore: '79.8' },
-                    { name: 'Sarah Wilson', averageScore: '78.2' },
-                    { name: 'David Brown', averageScore: '76.9' }
-                ];
-            }
-            
-            const tbody = document.querySelector('#topStudentsTable tbody');
-            tbody.innerHTML = '';
-            
-            students.forEach(student => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${student.name}</td>
-                    <td>${student.averageScore}%</td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        // Handle student form submission
-        async function handleStudentFormSubmit(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(studentForm);
-            const studentData = {
-                first_name: formData.get('firstName'),
-                last_name: formData.get('lastName'),
-                email: formData.get('email'),
-                registration_number: formData.get('registrationNumber'),
-                gender: formData.get('gender')
-            };
-            
-            // Show loading state
-            document.getElementById('saveStudentBtnText').style.display = 'none';
-            document.getElementById('saveStudentLoading').style.display = 'inline-block';
-            
-            try {
-                const response = await fetch(API_ENDPOINTS.students, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(studentData)
-                });
-                
-                const result = await response.json();
-                
-                if (response.ok) {
-                    addStudentModal.style.display = 'none';
-                    studentForm.reset();
-                    showNotification(result.message || 'Student added successfully!');
-                    
-                    // Refresh the page to show updated data
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
-                } else {
-                    throw new Error(result.error || 'Failed to add student');
-                }
-            } catch (error) {
-                console.error('Error adding student:', error);
-                showNotification(error.message, 'error');
-            } finally {
-                // Hide loading state
-                document.getElementById('saveStudentBtnText').style.display = 'inline';
-                document.getElementById('saveStudentLoading').style.display = 'none';
-            }
-        }
-
-        // Handle lecturer form submission
-        async function handleLecturerFormSubmit(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(lecturerForm);
-            const lecturerData = {
-                first_name: formData.get('firstName'),
-                last_name: formData.get('lastName'),
-                email: formData.get('email'),
-                lecturer_id: formData.get('lecturerId')
-            };
-            
-            // Show loading state
-            document.getElementById('saveLecturerBtnText').style.display = 'none';
-            document.getElementById('saveLecturerLoading').style.display = 'inline-block';
-            
-            try {
-                const response = await fetch(API_ENDPOINTS.lecturers, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(lecturerData)
-                });
-                
-                const result = await response.json();
-                
-                if (response.ok) {
-                    addLecturerModal.style.display = 'none';
-                    lecturerForm.reset();
-                    showNotification(result.message || 'Lecturer added successfully!');
-                    
-                    // Refresh the page to show updated data
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
-                } else {
-                    throw new Error(result.error || 'Failed to add lecturer');
-                }
-            } catch (error) {
-                console.error('Error adding lecturer:', error);
-                showNotification(error.message, 'error');
-            } finally {
-                // Hide loading state
-                document.getElementById('saveLecturerBtnText').style.display = 'inline';
-                document.getElementById('saveLecturerLoading').style.display = 'none';
-            }
-        }
-
-        // Delete student function
-        async function deleteStudent(registrationNumber) {
-            if (confirm('Are you sure you want to delete this student? This action cannot be undone.')) {
-                try {
-                    const response = await fetch(`${API_ENDPOINTS.students}/${registrationNumber}`, {
-                        method: 'DELETE'
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (response.ok) {
-                        showNotification(result.message || 'Student deleted successfully!');
-                        
-                        // Refresh the page to show updated data
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1500);
-                    } else {
-                        throw new Error(result.error || 'Failed to delete student');
-                    }
-                } catch (error) {
-                    console.error('Error deleting student:', error);
-                    showNotification(error.message, 'error');
-                }
-            }
-        }
-
-        // Delete lecturer function
-        async function deleteLecturer(lecturerId) {
-            if (confirm('Are you sure you want to delete this lecturer? This action cannot be undone.')) {
-                try {
-                    const response = await fetch(`${API_ENDPOINTS.lecturers}/${lecturerId}`, {
-                        method: 'DELETE'
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (response.ok) {
-                        showNotification(result.message || 'Lecturer deleted successfully!');
-                        
-                        // Refresh the page to show updated data
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1500);
-                    } else {
-                        throw new Error(result.error || 'Failed to delete lecturer');
-                    }
-                } catch (error) {
-                    console.error('Error deleting lecturer:', error);
-                    showNotification(error.message, 'error');
-                }
-            }
-        }
-
-        // Add active class to current page in sidebar
-        const currentPage = window.location.pathname;
-        document.querySelectorAll('.sidebar-menu a').forEach(link => {
-            if (link.getAttribute('href') === currentPage) {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
-            }
-        });
-
-        // Make functions globally available for onclick events
-        window.deleteStudent = deleteStudent;
-        window.deleteLecturer = deleteLecturer;
-        window.openAddStudentModal = () => addStudentModal.style.display = 'flex';
-        window.openAddLecturerModal = () => addLecturerModal.style.display = 'flex';
-    </script>
 </body>
 </html>
