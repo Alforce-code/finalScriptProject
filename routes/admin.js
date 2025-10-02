@@ -53,20 +53,43 @@ router.get("/dashboard", async (req, res) => {
     }
 });
 
-// NEW: Enhanced manage users page with AJAX support
-router.get("/manage-users", async (req, res) => {
+
+
+
+router.get("/lecturer", async (req, res) => {
     try {
         const [students] = await req.pool.promise().query("SELECT * FROM student");
         const [lecturers] = await req.pool.promise().query("SELECT * FROM lecturer");
         
-        res.render("admin/manage-users", { 
+        res.render("admin/lecturer", { 
             students, 
             lecturers,
             user: req.session.user
         });
     } catch (error) {
         console.error(error);
-        res.render("admin/manage-users", { 
+        res.render("admin/lecturer", { 
+            students: [], 
+            lecturers: [],
+            user: req.session.user
+        });
+    }
+});
+
+
+router.get("/student", async (req, res) => {
+    try {
+        const [students] = await req.pool.promise().query("SELECT * FROM student");
+        const [lecturers] = await req.pool.promise().query("SELECT * FROM lecturer");
+        
+        res.render("admin/student", { 
+            students, 
+            lecturers,
+            user: req.session.user
+        });
+    } catch (error) {
+        console.error(error);
+        res.render("admin/student", { 
             students: [], 
             lecturers: [],
             user: req.session.user
@@ -98,7 +121,7 @@ router.get("/manage-programs", async (req, res) => {
     }
 });
 
-// NEW: Enhanced reports page with chart support
+
 router.get("/reports", async (req, res) => {
     try {
         res.render("admin/reports", {

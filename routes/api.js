@@ -1,37 +1,6 @@
 // routes/api.js
 const express = require("express");
 const router = express.Router();
-<<<<<<< HEAD
-const { requireAuth, checkUser } = require("../middleware/auth");
-
-// Apply checkUser middleware to all API routes
-router.use(checkUser);
-
-// Example public API route
-router.get("/", (req, res) => {
-    res.json({ message: "API root works!" });
-});
-
-// Example protected API route
-router.get("/secure", requireAuth, (req, res) => {
-    res.json({
-        message: "You are authenticated!",
-        user: req.session.user
-    });
-});
-
-// Example database query (uses req.pool from app.js)
-router.get("/users", requireAuth, (req, res) => {
-    req.pool.query("SELECT id, email FROM users", (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: "Database error" });
-        }
-        res.json(results);
-    });
-});
-
-module.exports = router;
-=======
 const { requireAuth, requireRole } = require("../middleware/auth");
 
 // Example API routes - adjust these based on your needs
@@ -109,7 +78,7 @@ router.get("/dashboard", async (req, res) => {
 });
 
 // Students endpoints
-router.get("/students", requireRole(['admin']), async (req, res) => {
+router.get("/student", requireRole(['admin']), async (req, res) => {
     try {
         const [students] = await req.pool.promise().query('SELECT * FROM student');
         res.json(students);
@@ -119,7 +88,7 @@ router.get("/students", requireRole(['admin']), async (req, res) => {
     }
 });
 
-router.post("/students", requireRole(['admin']), async (req, res) => {
+router.post("/student", requireRole(['admin']), async (req, res) => {
     try {
         const { first_name, last_name, email, registration_number, gender } = req.body;
         await req.pool.promise().query(
@@ -133,7 +102,7 @@ router.post("/students", requireRole(['admin']), async (req, res) => {
     }
 });
 
-router.delete("/students/:id", requireRole(['admin']), async (req, res) => {
+router.delete("/student/:id", requireRole(['admin']), async (req, res) => {
     try {
         await req.pool.promise().query('DELETE FROM student WHERE registration_number = ?', [req.params.id]);
         res.json({ success: true });
@@ -144,7 +113,7 @@ router.delete("/students/:id", requireRole(['admin']), async (req, res) => {
 });
 
 // Lecturers endpoints
-router.get("/lecturers", requireRole(['admin']), async (req, res) => {
+router.get("/lecturer", requireRole(['admin']), async (req, res) => {
     try {
         const [lecturers] = await req.pool.promise().query('SELECT * FROM lecturer');
         res.json(lecturers);
@@ -154,7 +123,7 @@ router.get("/lecturers", requireRole(['admin']), async (req, res) => {
     }
 });
 
-router.post("/lecturers", requireRole(['admin']), async (req, res) => {
+router.post("/lecturer", requireRole(['admin']), async (req, res) => {
     try {
         const { first_name, last_name, email, lecturer_id } = req.body;
         await req.pool.promise().query(
@@ -168,7 +137,7 @@ router.post("/lecturers", requireRole(['admin']), async (req, res) => {
     }
 });
 
-router.delete("/lecturers/:id", requireRole(['admin']), async (req, res) => {
+router.delete("/lecturer/:id", requireRole(['admin']), async (req, res) => {
     try {
         await req.pool.promise().query('DELETE FROM lecturer WHERE lecturer_id = ?', [req.params.id]);
         res.json({ success: true });
@@ -334,7 +303,7 @@ router.get("/reports", requireRole(['admin']), async (req, res) => {
     }
 });
 // Get all students API
-router.get("/students", requireAuth, requireRole(['admin', 'lecturer']), async (req, res) => {
+router.get("/student", requireAuth, requireRole(['admin', 'lecturer']), async (req, res) => {
     try {
         const [students] = await req.pool.promise().query("SELECT * FROM student");
         res.json(students);
@@ -345,7 +314,7 @@ router.get("/students", requireAuth, requireRole(['admin', 'lecturer']), async (
 });
 
 // Get student by ID API
-router.get("/students/:id", requireAuth, async (req, res) => {
+router.get("/student/:id", requireAuth, async (req, res) => {
     try {
         const [students] = await req.pool.promise().query(
             "SELECT * FROM student WHERE registration_number = ?", 
@@ -365,7 +334,7 @@ router.get("/students/:id", requireAuth, async (req, res) => {
 
 
 // Get courses API
-router.get("/courses", requireAuth, async (req, res) => {
+router.get("/module", requireAuth, async (req, res) => {
     try {
         const [courses] = await req.pool.promise().query("SELECT * FROM course");
         res.json(courses);
@@ -378,7 +347,7 @@ router.get("/courses", requireAuth, async (req, res) => {
 // routes/api.js - Add these endpoints
 
 // Add student endpoint
-router.post("/students", requireRole(['admin']), async (req, res) => {
+router.post("/student", requireRole(['admin']), async (req, res) => {
     try {
         const { first_name, last_name, email, registration_number, gender } = req.body;
         
@@ -501,4 +470,3 @@ router.delete("/lecturers/:id", requireRole(['admin']), async (req, res) => {
 // Add more API routes as needed...
 
 module.exports = router;
->>>>>>> 9d86464bcd6bc3c0152ebc8555d3834293a7fea6

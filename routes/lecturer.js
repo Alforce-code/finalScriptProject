@@ -14,7 +14,91 @@ function getLecturerId(req, res) {
     }
     return req.session.user.id;
 }
+// Update Grade (Save button)
+router.post("/update-grade", async (req, res) => {
+    try {
+        const { registrationNumber, moduleId, assessmentId, score } = req.body;
+        const numericScore = Number(score);
 
+        // Validation
+        if (isNaN(numericScore)) {
+            throw new Error("Score must be a number");
+        }
+        if (numericScore < 0 || numericScore > 100) {
+            throw new Error("Score must be between 0 and 100");
+        }
+
+        const [existing] = await req.pool.promise().query(
+            `SELECT * FROM grade 
+             WHERE registration_number = ? AND module_id = ? AND assessment_id = ?`,
+            [registrationNumber, moduleId, assessmentId]
+        );
+
+        if (existing.length > 0) {
+            await req.pool.promise().query(
+                `UPDATE grade SET score = ? 
+                 WHERE registration_number = ? AND module_id = ? AND assessment_id = ?`,
+                [numericScore, registrationNumber, moduleId, assessmentId]
+            );
+            console.log(`Grade updated successfully for student ${registrationNumber}`);
+        } else {
+            await req.pool.promise().query(
+                `INSERT INTO grade (registration_number, module_id, assessment_id, score)
+                 VALUES (?, ?, ?, ?)`,
+                [registrationNumber, moduleId, assessmentId, numericScore]
+            );
+            console.log(`Grade inserted successfully for student ${registrationNumber}`);
+        }
+
+        res.redirect(`/lecturer/manage-grades?moduleId=${moduleId}&success=grade_updated`);
+    } catch (error) {
+        console.error("Error updating grade:", error);
+        res.redirect(`/lecturer/manage-grades?moduleId=${req.body.moduleId}&error=update_failed`);
+    }
+});
+
+// Delete Grade
+router.post("/delete-grade", async (req, res) => {
+    try {
+        const { registrationNumber, moduleId, assessmentId } = req.body;
+
+        // Log the delete attempt
+        console.log("Delete grade request:", { registrationNumber, moduleId, assessmentId });
+
+        // Validate that all required fields are present
+        if (!registrationNumber || !moduleId || !assessmentId) {
+            throw new Error("Missing required fields for delete operation");
+        }
+
+        // Check if the grade exists before attempting to delete
+        const [existing] = await req.pool.promise().query(
+            `SELECT * FROM grade 
+             WHERE registration_number = ? AND module_id = ? AND assessment_id = ?`,
+            [registrationNumber, moduleId, assessmentId]
+        );
+
+        if (existing.length === 0) {
+            console.log("Grade not found, nothing to delete");
+            res.redirect(`/lecturer/manage-grades?moduleId=${moduleId}&info=grade_not_found`);
+            return;
+        }
+
+        // Perform the delete
+        const [result] = await req.pool.promise().query(
+            `DELETE FROM grade 
+             WHERE registration_number = ? AND module_id = ? AND assessment_id = ?`,
+            [registrationNumber, moduleId, assessmentId]
+        );
+
+        console.log(`Successfully deleted grade. Rows affected: ${result.affectedRows}`);
+        res.redirect(`/lecturer/manage-grades?moduleId=${moduleId}&success=grade_deleted`);
+
+    } catch (error) {
+        console.error("Error deleting grade:", error.message);
+        console.error("Full error:", error);
+        res.redirect(`/lecturer/manage-grades?moduleId=${req.body.moduleId || ''}&error=delete_failed`);
+    }
+});
 // Dashboard
 router.get("/dashboard", async (req, res) => {
     try {
