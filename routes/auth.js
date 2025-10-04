@@ -1,118 +1,110 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const router = express.Router();
-const { requireAuth, checkUser } = require("../middleware/auth");
+const { requireAuth } = require("../middleware/auth");
 
-// Login page
+// ------------------------ LOGIN PAGE ------------------------
 router.get("/login", (req, res) => {
     if (req.session.user) {
         switch (req.session.user.role) {
             case 'admin':
-                res.redirect('/admin/dashboard');
-                break;
+                return res.redirect('/admin/dashboard');
             case 'lecturer':
-                res.redirect('/lecturer/dashboard');
-                break;
+                return res.redirect('/lecturer/dashboard');
             case 'student':
-                res.redirect('/student/dashboard');
-                break;
+                return res.redirect('/student/dashboard');
         }
-    } else {
-        res.render("auth/login", { error: null });
     }
+    res.render("auth/login", { error: null });
 });
 
-// Login handler
+// ------------------------ LOGIN HANDLER ------------------------
 router.post("/login", async (req, res) => {
     const { email, password } = req.body;
-    
+
     try {
-        // Check if user exists in student table
-        const [student] = await req.pool.promise().query(
-            "SELECT * FROM student WHERE email = ?", 
-            [email]
+        // Check lecturer
+        const [lecturerRows] = await req.pool.promise().query(
+            "SELECT * FROM lecturer WHERE email = ?", [email]
         );
-        
-        // Check if user exists in lecturer table
-        const [lecturer] = await req.pool.promise().query(
-            "SELECT * FROM lecturer WHERE email = ?", 
-            [email]
+
+        // Check student
+        const [studentRows] = await req.pool.promise().query(
+            "SELECT * FROM student WHERE email = ?", [email]
         );
+
         let user = null;
         let role = null;
-        
-        if (student.length > 0) {
-            user = student[0];
-            role = 'student';
-        } else if (lecturer.length > 0) {
-            user = lecturer[0];
+
+        if (lecturerRows.length > 0) {
+            user = lecturerRows[0];
             role = 'lecturer';
+        } else if (studentRows.length > 0) {
+            user = studentRows[0];
+            role = 'student';
         } else if (email === 'admin@mubas.ac.mw') {
-            const isPasswordValid = await bcrypt.compare(password, await bcrypt.hash("admin123", 10));
+            // Admin login (default password: admin123)
+            const hashedAdminPassword = await bcrypt.hash("admin123", 10);
+            const isPasswordValid = await bcrypt.compare(password, hashedAdminPassword);
             if (isPasswordValid) {
-                user = {
-                    first_name: 'Thandazani ',
-                    last_name: 'Kaluanda',
-                    email: 'admin@mubas.ac.mw'
-                };
+                user = { first_name: "Thandazani", last_name: "Kalua", email: 'admin@mubas.ac.mw' };
                 role = 'admin';
             }
         }
-        
-        if (user && role) {
-            req.session.user = {
-                id: user.registration_number || user.lecturer_id || 'admin',
-                firstName: user.first_name,
-                lastName: user.last_name,
-                email: user.email,
-                role: role
-            };
-            
-            switch (role) {
-                case 'admin':
-                    res.redirect('/admin/dashboard');
-                    break;
-                case 'lecturer':
-                    res.redirect('/lecturer/dashboard');
-                    break;
-                case 'student':
-                    res.redirect('/student/dashboard');
-                    break;
-            }
-        } else {
-            res.render("auth/login", { error: "Invalid email or password" });
+
+        if (!user || !role) {
+            return res.render("auth/login", { error: "Invalid email or password" });
         }
-    } catch (error) {
-        console.error(error);
+
+        // Compare password for lecturer or student
+        if (role !== 'admin') {
+            const isPasswordValid = await bcrypt.compare(password, user.password);
+            if (!isPasswordValid) {
+                return res.render("auth/login", { error: "Invalid email or password" });
+            }
+        }
+
+        // Set session
+        req.session.user = {
+            id: user.registration_number || user.lecturer_id || 'admin',
+            firstName: user.first_name,
+            lastName: user.last_name,
+            email: user.email,
+            role: role
+        };
+
+        // Redirect by role
+        switch (role) {
+            case 'admin':
+                return res.redirect('/admin/dashboard');
+            case 'lecturer':
+                return res.redirect('/lecturer/dashboard');
+            case 'student':
+                return res.redirect('/student/dashboard');
+        }
+    } catch (err) {
+        console.error(err);
         res.render("auth/login", { error: "An error occurred during login" });
     }
 });
 
-
-// Forgot Password
-
+// ------------------------ FORGOT PASSWORD ------------------------
 router.get("/forgot-password", (req, res) => {
     res.render("auth/forgot-password", { error: null, success: null });
 });
 
 router.post("/forgot-password", async (req, res) => {
     const { email } = req.body;
-
     try {
-        // Check if email exists in student or lecturer table
-        const [student] = await req.pool.promise().query("SELECT * FROM student WHERE email = ?", [email]);
-        const [lecturer] = await req.pool.promise().query("SELECT * FROM lecturer WHERE email = ?", [email]);
+        const [studentRows] = await req.pool.promise().query("SELECT * FROM student WHERE email = ?", [email]);
+        const [lecturerRows] = await req.pool.promise().query("SELECT * FROM lecturer WHERE email = ?", [email]);
 
-        if (student.length === 0 && lecturer.length === 0) {
+        if (studentRows.length === 0 && lecturerRows.length === 0) {
             return res.render("auth/forgot-password", { error: "Email not found", success: null });
         }
 
-        // just simulating a reset link (does not send emails yet)
-        const resetLink = "/auth/reset-password"; 
-        return res.render("auth/forgot-password", { 
-            error: null, 
-            success: `Password reset link: ${resetLink}` 
-        });
+        const resetLink = "/auth/reset-password"; // Simulated reset link
+        return res.render("auth/forgot-password", { error: null, success: `Password reset link: ${resetLink}` });
 
     } catch (err) {
         console.error(err);
@@ -120,7 +112,7 @@ router.post("/forgot-password", async (req, res) => {
     }
 });
 
-// Change Password
+// ------------------------ CHANGE PASSWORD ------------------------
 router.get("/change-password", requireAuth, (req, res) => {
     res.render("auth/change-password", { error: null, success: null, user: req.session.user });
 });
@@ -134,83 +126,73 @@ router.post("/change-password", requireAuth, async (req, res) => {
     }
 
     try {
-        let table = user.role === "student" ? "student" : "lecturer";
-        let idField = user.role === "student" ? "registration_number" : "lecturer_id";
+        const table = user.role === "student" ? "student" : "lecturer";
+        const idField = user.role === "student" ? "registration_number" : "lecturer_id";
 
-        const [rows] = await req.pool.promise().query(
-            `SELECT * FROM ${table} WHERE email = ?`, [user.email]
-        );
-
+        const [rows] = await req.pool.promise().query(`SELECT * FROM ${table} WHERE email = ?`, [user.email]);
         if (rows.length === 0) {
             return res.render("auth/change-password", { error: "User not found", success: null, user });
         }
 
         const dbUser = rows[0];
-
-        // Check current password (assuming you’re storing hashed passwords in DB)
         const validPassword = await bcrypt.compare(currentPassword, dbUser.password || "");
         if (!validPassword) {
             return res.render("auth/change-password", { error: "Current password is incorrect", success: null, user });
         }
 
-        // Hash new password and update
         const hashed = await bcrypt.hash(newPassword, 10);
-        await req.pool.promise().query(
-            `UPDATE ${table} SET password = ? WHERE ${idField} = ?`,
-            [hashed, dbUser[idField]]
-        );
+        await req.pool.promise().query(`UPDATE ${table} SET password = ? WHERE ${idField} = ?`, [hashed, dbUser[idField]]);
 
         res.render("auth/change-password", { error: null, success: "Password changed successfully!", user });
+
     } catch (err) {
         console.error(err);
         res.render("auth/change-password", { error: "Error changing password", success: null, user });
     }
 });
 
-
-
-// Register page (for admin only)
+// ------------------------ REGISTER USER (ADMIN ONLY) ------------------------
 router.get("/register", requireAuth, (req, res) => {
-    if (req.session.user.role !== 'admin') {
-        return res.redirect('/');
-    }
+    if (req.session.user.role !== 'admin') return res.redirect('/');
     res.render("auth/register", { error: null, success: null });
 });
 
-// Register handler (for admin only)
 router.post("/register", requireAuth, async (req, res) => {
-    if (req.session.user.role !== 'admin') {
-        return res.redirect('/');
-    }
-    
+    if (req.session.user.role !== 'admin') return res.redirect('/');
+
     const { role, firstName, lastName, email, password, registrationNumber, program, year } = req.body;
-    
+
     try {
+        if (!password) {
+            return res.render("auth/register", { error: "Password is required", success: null });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         if (role === 'student') {
-            // Register student
             await req.pool.promise().query(
-                "INSERT INTO student (registration_number, first_name, last_name, email, gender) VALUES (?, ?, ?, ?, ?)",
-                [registrationNumber, firstName, lastName, email, 'M'] // Default gender to M for demo
+                "INSERT INTO student (registration_number, first_name, last_name, email, password) VALUES (?, ?, ?, ?, ?)",
+                [registrationNumber, firstName, lastName, email, hashedPassword]
             );
-            
-            // Add to class enrollment
+
             const classId = `${program}${year}`;
             await req.pool.promise().query(
                 "INSERT INTO student_class_enrollment (registration_number, class_id) VALUES (?, ?)",
                 [registrationNumber, classId]
             );
+
         } else if (role === 'lecturer') {
-            // Register lecturer
             const lecturerId = `LEC${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
             await req.pool.promise().query(
-                "INSERT INTO lecturer (lecturer_id, first_name, last_name, email) VALUES (?, ?, ?, ?)",
-                [lecturerId, firstName, lastName, email]
+                "INSERT INTO lecturer (lecturer_id, first_name, last_name, email, password) VALUES (?, ?, ?, ?, ?)",
+                [lecturerId, firstName, lastName, email, hashedPassword]
             );
         }
-        
+
         res.render("auth/register", { error: null, success: "User registered successfully" });
-    } catch (error) {
-        console.error(error);
+
+    } catch (err) {
+        console.error(err);
         res.render("auth/register", { error: "Error registering user", success: null });
     }
 });
