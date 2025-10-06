@@ -43,14 +43,38 @@ app.use((req, res, next) => {
 const { requireAuth, requireRole, checkUser } = require("./middleware/auth");
 app.use(checkUser);
 
-// Routes
-app.use("/auth", require("./routes/auth"));
-app.use("/admin", require("./routes/admin"));
-app.use("/lecturer", require("./routes/lecturer"));
-app.use("/student", require("./routes/student"));
-app.use("/api", require("./routes/api"));
+// ✅ FIXED: Import all routes ONCE
+const adminRoutes = require('./routes/admin');
+const authRoutes = require("./routes/auth");
+const lecturerRoutes = require("./routes/lecturer");
+const studentRoutes = require("./routes/student");
+const apiRoutes = require("./routes/api");
 
-// ✅ FIXED: Single root route - Remove duplicate routes
+// ✅ FIXED: Use all routes ONCE
+app.use("/auth", authRoutes);
+app.use("/admin", adminRoutes);
+app.use("/lecturer", lecturerRoutes);
+app.use("/student", studentRoutes);
+app.use("/api", apiRoutes);
+
+
+
+
+// Import student operation routes
+const addStudentRoutes = require('./routes/add-student');
+const updateStudentRoutes = require('./routes/update-student');
+const deleteStudentRoutes = require('./routes/delete-student');
+const enrollStudentRoutes = require('./routes/enroll-student');
+const removeEnrollmentRoutes = require('./routes/remove-enrollment');
+
+// Use student operation routes with /admin prefix
+app.use('/admin', addStudentRoutes);
+app.use('/admin', updateStudentRoutes);
+app.use('/admin', deleteStudentRoutes);
+app.use('/admin', enrollStudentRoutes);
+app.use('/admin', removeEnrollmentRoutes);
+
+
 app.get('/', (req, res) => {
     // If user is already logged in, redirect to their dashboard
     if (req.session.user) {

@@ -7,32 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Your existing CSS styles remain the same */
+        /* All your existing CSS styles remain the same */
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        :root {
-            --primary: #4e73df;
-            --secondary: #858796;
-            --success: #1cc88a;
-            --info: #36b9cc;
-            --warning: #f6c23e;
-            --danger: #e74a3b;
-            --light: #f8f9fc;
-            --dark: #5a5c69;
-            --sidebar-width: 250px;
-        }
-
-        body {
-            display: flex;
-            background-color: #f8f9fc;
-            color: #333;
-        }
-  * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -223,6 +199,22 @@
             color: var(--dark);
         }
 
+        /* Smaller chart containers */
+        .chart-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            padding: 15px;
+            margin-bottom: 20px;
+            height: 300px; /* Smaller height */
+        }
+
+        .chart-container h2 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
         .table-container {
             background-color: white;
             border-radius: 8px;
@@ -270,102 +262,6 @@
             background-color: #3a56c4;
         }
 
-        .btn-danger {
-            background-color: var(--danger);
-        }
-
-        .btn-danger:hover {
-            background-color: #d52a1a;
-        }
-
-        .btn-success {
-            background-color: var(--success);
-        }
-
-        .btn-success:hover {
-            background-color: #17a673;
-        }
-
-        /* Forms */
-        .form-container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: var(--dark);
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #d1d3e2;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 15px;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: white;
-            border-radius: 8px;
-            width: 500px;
-            max-width: 90%;
-            padding: 20px;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e3e6f0;
-        }
-
-        .modal-header h3 {
-            margin: 0;
-            color: var(--dark);
-        }
-
-        .close {
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--secondary);
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -382,9 +278,6 @@
             }
             .charts-container {
                 grid-template-columns: 1fr;
-            }
-            .form-row {
-                flex-direction: column;
             }
         }
 
@@ -403,54 +296,10 @@
             to { transform: rotate(360deg); }
         }
 
-        .error {
-            color: var(--danger);
-            background-color: #f8d7da;
-            padding: 10px;
-            border-radius: 4px;
-            margin: 10px 0;
-        }
-
-        .chart-container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-        /* All your existing CSS styles... */
-        /* ... (keep all your existing CSS styles) ... */
-
-        /* Add these new styles for better user experience */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 4px;
-            color: white;
-            z-index: 3000;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .notification.success {
-            background-color: var(--success);
-        }
-
-        .notification.error {
-            background-color: var(--danger);
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
+        .chart-loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--secondary);
         }
     </style>
 </head>
@@ -473,7 +322,6 @@
                 <li><a href="/admin/lecturer"><i class="fas fa-graduation-cap"></i> <span>Lecturer</a></li>
                 <li><a href="/admin/student"><i class="fas fa-user-graduate"></i> <span>Students</span></a></li>
                 <li><a href="/admin/reports"><i class="fas fa-chart-bar"></i> <span>Reports</span></a></li>
-                
                 <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
             </ul>
         </div>
@@ -523,40 +371,68 @@
             <!-- Charts and Data Section -->
             <div class="charts-container">
                 <div class="chart-box">
-                    <h2>Student Performance Overview</h2>
-                    <canvas id="performanceChart"></canvas>
+                    <h2>Module Performance Overview</h2>
+                    <div id="performanceChartContainer">
+                        <div class="chart-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Loading performance data...
+                        </div>
+                        <canvas id="performanceChart" height="250"></canvas>
+                    </div>
                 </div>
                 <div class="table-box">
                     <h2>Top Performing Students</h2>
-                    <table id="topStudentsTable">
-                        <thead>
-                            <tr>
-                                <th>Student</th>
-                                <th>Average Score</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Will be populated by JavaScript -->
-                        </tbody>
-                    </table>
+                    <div id="topStudentsContainer">
+                        <div class="chart-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Loading top students...
+                        </div>
+                        <table id="topStudentsTable" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Average Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- System Overview Chart -->
-            <div class="chart-container">
-                <h2>System Overview</h2>
-                <canvas id="systemOverviewChart" width="400" height="200"></canvas>
-            </div>
-            
-            <!-- Additional Charts -->
+            <!-- Smaller Charts Section -->
             <div class="charts-container">
-                <div class="chart-box">
+                <!-- Program Distribution Chart -->
+                <div class="chart-container">
                     <h2>Program Distribution</h2>
-                    <canvas id="programDistributionChart"></canvas>
+                    <div id="programChartContainer">
+                        <div class="chart-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Loading program data...
+                        </div>
+                        <canvas id="programDistributionChart" height="200"></canvas>
+                    </div>
                 </div>
-                <div class="chart-box">
+
+                <!-- Gender Distribution Chart -->
+                <div class="chart-container">
                     <h2>Gender Distribution</h2>
-                    <canvas id="genderDistributionChart"></canvas>
+                    <div id="genderChartContainer">
+                        <div class="chart-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Loading gender data...
+                        </div>
+                        <canvas id="genderDistributionChart" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- System Overview Chart -->
+                <div class="chart-container">
+                    <h2>System Overview</h2>
+                    <div id="systemChartContainer">
+                        <div class="chart-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Loading system data...
+                        </div>
+                        <canvas id="systemOverviewChart" height="200"></canvas>
+                    </div>
                 </div>
             </div>
 
@@ -564,497 +440,253 @@
             <div class="table-container">
                 <h2>Quick Actions</h2>
                 <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                <a href="/admin/manage-programs" class="btn">Manage Programs</a>
-                <a href="/admin/lecturer" class="btn">Lecturer</a>
-                <a href="/admin/student" class="btn">Students</a>
-                <a href="/admin/reports" class="btn">View Reports</a>
+                    <a href="/admin/manage-programs" class="btn">Manage Programs</a>
+                    <a href="/admin/lecturer" class="btn">Lecturer</a>
+                    <a href="/admin/student" class="btn">Students</a>
+                    <a href="/admin/reports" class="btn">View Reports</a>
                 </div>
             </div>
         </div>
-    </div>
+    </div><script>
+    // Initialize the page with REAL database data only
+    document.addEventListener('DOMContentLoaded', function() {
+        loadDashboardCharts();
+    });
 
-    <!-- Add Student Modal -->
-    <div class="modal" id="addStudentModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Add New Student</h3>
-                <span class="close">&times;</span>
-            </div>
-            <form id="studentForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="studentFirstName">First Name *</label>
-                        <input type="text" id="studentFirstName" name="firstName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="studentLastName">Last Name *</label>
-                        <input type="text" id="studentLastName" name="lastName" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="studentEmail">Email *</label>
-                    <input type="email" id="studentEmail" name="email" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="studentRegNumber">Registration Number *</label>
-                    <input type="text" id="studentRegNumber" name="registrationNumber" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="studentGender">Gender *</label>
-                    <select id="studentGender" name="gender" required>
-                        <option value="">Select Gender</option>
-                        <option value="M">Male</option>
-                        <option value="F">Female</option>
-                    </select>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn" id="cancelStudentBtn">Cancel</button>
-                    <button type="submit" class="btn btn-success" id="saveStudentBtn">
-                        <span id="saveStudentBtnText">Save Student</span>
-                        <div class="loading" id="saveStudentLoading" style="display: none;"></div>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Add Lecturer Modal -->
-    <div class="modal" id="addLecturerModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Add New Lecturer</h3>
-                <span class="close">&times;</span>
-            </div>
-            <form id="lecturerForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="lecturerFirstName">First Name *</label>
-                        <input type="text" id="lecturerFirstName" name="firstName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="lecturerLastName">Last Name *</label>
-                        <input type="text" id="lecturerLastName" name="lastName" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="lecturerEmail">Email *</label>
-                    <input type="email" id="lecturerEmail" name="email" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="lecturerId">Lecturer ID *</label>
-                    <input type="text" id="lecturerId" name="lecturerId" required>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn" id="cancelLecturerBtn">Cancel</button>
-                    <button type="submit" class="btn btn-success" id="saveLecturerBtn">
-                        <span id="saveLecturerBtnText">Save Lecturer</span>
-                        <div class="loading" id="saveLecturerLoading" style="display: none;"></div>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        // Database API endpoints
-        const API_BASE = '/api';
-        const API_ENDPOINTS = {
-            dashboard: `${API_BASE}/dashboard`,
-            students: `${API_BASE}/students`,
-            lecturers: `${API_BASE}/lecturers`,
-            modules: `${API_BASE}/modules`,
-            grades: `${API_BASE}/grades`,
-            reports: `${API_BASE}/reports`
-        };
-
-        // Global variables
-        let currentStudents = [];
-        let currentLecturers = [];
-
-        // DOM Elements
-        const addStudentModal = document.getElementById('addStudentModal');
-        const addLecturerModal = document.getElementById('addLecturerModal');
-        const closeModals = document.querySelectorAll('.close');
-        const cancelStudentBtn = document.getElementById('cancelStudentBtn');
-        const cancelLecturerBtn = document.getElementById('cancelLecturerBtn');
-        const studentForm = document.getElementById('studentForm');
-        const lecturerForm = document.getElementById('lecturerForm');
-
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
-            loadDashboardData();
-            initializeCharts();
-            setupEventListeners();
-        });
-
-        // Setup event listeners
-        function setupEventListeners() {
-            // Modal event listeners
-            closeModals.forEach(close => {
-                close.addEventListener('click', function() {
-                    this.closest('.modal').style.display = 'none';
-                    resetForms();
-                });
-            });
+    // Load all dashboard charts with REAL database data only
+    async function loadDashboardCharts() {
+        try {
+            console.log('Loading REAL dashboard data from database...');
+            const response = await fetch('/admin/dashboard-data');
             
-            cancelStudentBtn.addEventListener('click', () => {
-                addStudentModal.style.display = 'none';
-                resetForms();
-            });
-            
-            cancelLecturerBtn.addEventListener('click', () => {
-                addLecturerModal.style.display = 'none';
-                resetForms();
-            });
-            
-            studentForm.addEventListener('submit', handleStudentFormSubmit);
-            lecturerForm.addEventListener('submit', handleLecturerFormSubmit);
-            
-            // Close modals when clicking outside
-            window.addEventListener('click', function(event) {
-                if (event.target.classList.contains('modal')) {
-                    event.target.style.display = 'none';
-                    resetForms();
-                }
-            });
-        }
-
-        // Reset form fields
-        function resetForms() {
-            studentForm.reset();
-            lecturerForm.reset();
-        }
-
-        // Show notification
-        function showNotification(message, type = 'success') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        }
-
-        // Load dashboard data from database
-        async function loadDashboardData() {
-            try {
-                const response = await fetch(API_ENDPOINTS.dashboard);
-                const data = await response.json();
-                
-                initializeCharts(data.chartData);
-                loadTopStudents(data.topStudents);
-                
-            } catch (error) {
-                console.error('Error loading dashboard data:', error);
-                initializeCharts({
-                    bitStudents: 120,
-                    bisStudents: 150,
-                    lecturers: 15,
-                    modulesCount: 25,
-                    modules: ['DMS-301', 'DSA-301', 'WEB-301', 'OPS-301', 'FIN-301'],
-                    averageScores: [65, 72, 68, 58, 63]
-                });
-            }
-        }
-
-        // Initialize charts with real data
-        function initializeCharts(chartData) {
-            // System Overview Chart (Pie Chart)
-            const systemCtx = document.getElementById('systemOverviewChart').getContext('2d');
-            new Chart(systemCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['BIT Students', 'BIS Students', 'Lecturers', 'Modules'],
-                    datasets: [{
-                        data: [
-                            chartData.bitStudents || 120,
-                            chartData.bisStudents || 150, 
-                            chartData.lecturers || 15, 
-                            chartData.modulesCount || 25
-                        ],
-                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-
-            // Performance Chart
-            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
-            new Chart(performanceCtx, {
-                type: 'bar',
-                data: {
-                    labels: chartData.modules || ['DMS-301', 'DSA-301', 'WEB-301', 'OPS-301', 'FIN-301'],
-                    datasets: [{
-                        label: 'Average Score',
-                        data: chartData.averageScores || [65, 72, 68, 58, 63],
-                        backgroundColor: '#4e73df',
-                        borderColor: '#4e73df',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100
-                        }
-                    }
-                }
-            });
-
-            // Program Distribution Chart
-            const programCtx = document.getElementById('programDistributionChart').getContext('2d');
-            new Chart(programCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['BIT', 'BIS'],
-                    datasets: [{
-                        data: [chartData.bitStudents || 120, chartData.bisStudents || 150],
-                        backgroundColor: ['#FF6384', '#36A2EB']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-
-            // Gender Distribution Chart
-            const genderCtx = document.getElementById('genderDistributionChart').getContext('2d');
-            new Chart(genderCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['Male', 'Female'],
-                    datasets: [{
-                        data: [65, 35],
-                        backgroundColor: ['#4e73df', '#e74a3b']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-        }
-
-        // Load top students table
-        function loadTopStudents(students) {
-            if (!students) {
-                students = [
-                    { name: 'John Doe', averageScore: '85.5' },
-                    { name: 'Jane Smith', averageScore: '82.3' },
-                    { name: 'Mike Johnson', averageScore: '79.8' },
-                    { name: 'Sarah Wilson', averageScore: '78.2' },
-                    { name: 'David Brown', averageScore: '76.9' }
-                ];
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             
-            const tbody = document.querySelector('#topStudentsTable tbody');
-            tbody.innerHTML = '';
+            const result = await response.json();
+            console.log('REAL Dashboard data loaded:', result);
             
-            students.forEach(student => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${student.name}</td>
-                    <td>${student.averageScore}%</td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        // Handle student form submission
-        async function handleStudentFormSubmit(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(studentForm);
-            const studentData = {
-                first_name: formData.get('firstName'),
-                last_name: formData.get('lastName'),
-                email: formData.get('email'),
-                registration_number: formData.get('registrationNumber'),
-                gender: formData.get('gender')
-            };
-            
-            // Show loading state
-            document.getElementById('saveStudentBtnText').style.display = 'none';
-            document.getElementById('saveStudentLoading').style.display = 'inline-block';
-            
-            try {
-                const response = await fetch(API_ENDPOINTS.students, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(studentData)
-                });
-                
-                const result = await response.json();
-                
-                if (response.ok) {
-                    addStudentModal.style.display = 'none';
-                    studentForm.reset();
-                    showNotification(result.message || 'Student added successfully!');
-                    
-                    // Refresh the page to show updated data
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
-                } else {
-                    throw new Error(result.error || 'Failed to add student');
-                }
-            } catch (error) {
-                console.error('Error adding student:', error);
-                showNotification(error.message, 'error');
-            } finally {
-                // Hide loading state
-                document.getElementById('saveStudentBtnText').style.display = 'inline';
-                document.getElementById('saveStudentLoading').style.display = 'none';
-            }
-        }
-
-        // Handle lecturer form submission
-        async function handleLecturerFormSubmit(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(lecturerForm);
-            const lecturerData = {
-                first_name: formData.get('firstName'),
-                last_name: formData.get('lastName'),
-                email: formData.get('email'),
-                lecturer_id: formData.get('lecturerId')
-            };
-            
-            // Show loading state
-            document.getElementById('saveLecturerBtnText').style.display = 'none';
-            document.getElementById('saveLecturerLoading').style.display = 'inline-block';
-            
-            try {
-                const response = await fetch(API_ENDPOINTS.lecturers, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(lecturerData)
-                });
-                
-                const result = await response.json();
-                
-                if (response.ok) {
-                    addLecturerModal.style.display = 'none';
-                    lecturerForm.reset();
-                    showNotification(result.message || 'Lecturer added successfully!');
-                    
-                    // Refresh the page to show updated data
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
-                } else {
-                    throw new Error(result.error || 'Failed to add lecturer');
-                }
-            } catch (error) {
-                console.error('Error adding lecturer:', error);
-                showNotification(error.message, 'error');
-            } finally {
-                // Hide loading state
-                document.getElementById('saveLecturerBtnText').style.display = 'inline';
-                document.getElementById('saveLecturerLoading').style.display = 'none';
-            }
-        }
-
-        // Delete student function
-        async function deleteStudent(registrationNumber) {
-            if (confirm('Are you sure you want to delete this student? This action cannot be undone.')) {
-                try {
-                    const response = await fetch(`${API_ENDPOINTS.students}/${registrationNumber}`, {
-                        method: 'DELETE'
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (response.ok) {
-                        showNotification(result.message || 'Student deleted successfully!');
-                        
-                        // Refresh the page to show updated data
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1500);
-                    } else {
-                        throw new Error(result.error || 'Failed to delete student');
-                    }
-                } catch (error) {
-                    console.error('Error deleting student:', error);
-                    showNotification(error.message, 'error');
-                }
-            }
-        }
-
-        // Delete lecturer function
-        async function deleteLecturer(lecturerId) {
-            if (confirm('Are you sure you want to delete this lecturer? This action cannot be undone.')) {
-                try {
-                    const response = await fetch(`${API_ENDPOINTS.lecturers}/${lecturerId}`, {
-                        method: 'DELETE'
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (response.ok) {
-                        showNotification(result.message || 'Lecturer deleted successfully!');
-                        
-                        // Refresh the page to show updated data
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1500);
-                    } else {
-                        throw new Error(result.error || 'Failed to delete lecturer');
-                    }
-                } catch (error) {
-                    console.error('Error deleting lecturer:', error);
-                    showNotification(error.message, 'error');
-                }
-            }
-        }
-
-        // Add active class to current page in sidebar
-        const currentPage = window.location.pathname;
-        document.querySelectorAll('.sidebar-menu a').forEach(link => {
-            if (link.getAttribute('href') === currentPage) {
-                link.classList.add('active');
+            if (result.success) {
+                const data = result.data;
+                initializeAllCharts(data);
             } else {
-                link.classList.remove('active');
+                throw new Error(result.error || 'Failed to load dashboard data');
             }
+        } catch (error) {
+            console.error('Error loading REAL dashboard data:', error);
+            showEmptyDashboard();
+        }
+    }
+
+    // Initialize all charts with REAL database data only
+    function initializeAllCharts(data) {
+        console.log('Initializing charts with REAL database data:', data);
+        
+        // Hide all loading indicators
+        document.querySelectorAll('.chart-loading').forEach(loading => {
+            loading.style.display = 'none';
         });
 
-        // Make functions globally available for onclick events
-        window.deleteStudent = deleteStudent;
-        window.deleteLecturer = deleteLecturer;
-        window.openAddStudentModal = () => addStudentModal.style.display = 'flex';
-        window.openAddLecturerModal = () => addLecturerModal.style.display = 'flex';
-    </script>
+        // Performance Chart (Module Average Scores) - ONLY IF DATA EXISTS
+        if (data.modulePerformance && data.modulePerformance.length > 0) {
+            initializePerformanceChart(data.modulePerformance);
+        } else {
+            showNoDataMessage('performanceChartContainer', 'No grade data available in database');
+        }
+        
+        // Program Distribution Chart - ONLY IF DATA EXISTS
+        if (data.programDistribution && data.programDistribution.length > 0) {
+            initializeProgramChart(data.programDistribution);
+        } else {
+            showNoDataMessage('programChartContainer', 'No program distribution data available');
+        }
+        
+        // Gender Distribution Chart - ONLY IF DATA EXISTS
+        if (data.genderDistribution && data.genderDistribution.length > 0) {
+            initializeGenderChart(data.genderDistribution);
+        } else {
+            showNoDataMessage('genderChartContainer', 'No gender data available in student records');
+        }
+        
+        // System Overview Chart - ALWAYS SHOW (uses basic counts)
+        initializeSystemChart(data.systemOverview);
+        
+        // Top Students Table - ONLY IF DATA EXISTS
+        if (data.topStudents && data.topStudents.length > 0) {
+            initializeTopStudentsTable(data.topStudents);
+        } else {
+            showNoDataMessage('topStudentsContainer', 'No student grade data available');
+        }
+    }
+
+    // Show empty state when no data
+    function showEmptyDashboard() {
+        document.querySelectorAll('.chart-loading').forEach(loading => {
+            loading.innerHTML = '<p style="color: #dc3545;">⚠️ Database connection failed</p>';
+        });
+    }
+
+    // Show no data message for specific chart
+    function showNoDataMessage(containerId, message) {
+        const container = document.getElementById(containerId);
+        const loading = container.querySelector('.chart-loading');
+        loading.innerHTML = `<p style="color: #6c757d; font-style: italic;">${message}</p>`;
+    }
+
+    // Performance Chart - Module Average Scores
+    function initializePerformanceChart(modulePerformance) {
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: modulePerformance.map(m => m.module_id),
+                datasets: [{
+                    label: 'Average Score (%)',
+                    data: modulePerformance.map(m => m.average_score || 0),
+                    backgroundColor: '#4e73df',
+                    borderColor: '#4e73df',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Average Score (%)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    // Program Distribution Chart
+    function initializeProgramChart(programDistribution) {
+        const ctx = document.getElementById('programDistributionChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: programDistribution.map(p => p.program_id),
+                datasets: [{
+                    data: programDistribution.map(p => p.student_count || 0),
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    // Gender Distribution Chart
+    function initializeGenderChart(genderDistribution) {
+        const ctx = document.getElementById('genderDistributionChart').getContext('2d');
+        
+        const maleData = genderDistribution.find(g => g.gender === 'M') || { count: 0 };
+        const femaleData = genderDistribution.find(g => g.gender === 'F') || { count: 0 };
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Male', 'Female'],
+                datasets: [{
+                    data: [maleData.count, femaleData.count],
+                    backgroundColor: ['#4e73df', '#e74a3b']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    // System Overview Chart - USES REAL COUNTS FROM DATABASE
+    function initializeSystemChart(systemOverview) {
+        const ctx = document.getElementById('systemOverviewChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Students', 'Lecturers', 'Modules', 'Programs'],
+                datasets: [{
+                    label: 'Count',
+                    data: [
+                        systemOverview.total_students || 0,
+                        systemOverview.total_lecturers || 0,
+                        systemOverview.total_modules || 0,
+                        systemOverview.total_programs || 0
+                    ],
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    // Top Students Table
+    function initializeTopStudentsTable(topStudents) {
+        const table = document.getElementById('topStudentsTable');
+        const tbody = table.querySelector('tbody');
+        const loading = document.querySelector('#topStudentsContainer .chart-loading');
+        
+        loading.style.display = 'none';
+        table.style.display = 'table';
+        
+        tbody.innerHTML = '';
+        
+        topStudents.forEach(student => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${student.first_name} ${student.last_name}</td>
+                <td>${(student.average_score || 0).toFixed(1)}%</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // Add active class to current page in sidebar
+    const currentPage = window.location.pathname;
+    document.querySelectorAll('.sidebar-menu a').forEach(link => {
+        if (link.getAttribute('href') === currentPage) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+</script>
 </body>
 </html>

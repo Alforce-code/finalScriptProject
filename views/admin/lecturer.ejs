@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,12 +8,17 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
         .card {
             box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
             border: 1px solid #e3e6f0;
         }
         .table-responsive {
             max-height: 500px;
+            overflow-y: auto;
         }
         .btn-action {
             margin: 2px;
@@ -20,201 +26,201 @@
         .alert {
             border-radius: 0.5rem;
         }
+        .rounded-circle {
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
-    <div class="container-fluid py-4">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h3 text-gray-800"><i class="fas fa-chalkboard-teacher me-2"></i>Manage Lecturers</h1>
-            <a href="/admin/dashboard" class="btn btn-secondary">
-                <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
-            </a>
-        </div>
+<div class="container-fluid py-4">
 
-        <div class="row">
-            <!-- Add Lecturer Form -->
-            <div class="col-lg-4 mb-4">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-plus-circle me-2"></i>Add New Lecturer
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <form action="/admin/add-lecturer" method="POST">
-                            <div class="mb-3">
-                                <label for="lecturer_id" class="form-label">Lecturer ID *</label>
-                                <input type="text" class="form-control" id="lecturer_id" name="lecturer_id" 
-                                       placeholder="e.g., LEC013" required maxlength="50">
-                            </div>
-                            <div class="mb-3">
-                                <label for="first_name" class="form-label">First Name *</label>
-                                <input type="text" class="form-control" id="first_name" name="first_name" 
-                                       placeholder="Enter first name" required maxlength="50">
-                            </div>
-                            <div class="mb-3">
-                                <label for="last_name" class="form-label">Last Name *</label>
-                                <input type="text" class="form-control" id="last_name" name="last_name" 
-                                       placeholder="Enter last name" required maxlength="50">
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email *</label>
-                                <input type="email" class="form-control" id="email" name="email" 
-                                       placeholder="lecturer@mubas.ac.mw" required maxlength="100">
-                            </div>
-                            <div class="mb-3">
-                                <label for="profile_picture" class="form-label">Profile Picture URL</label>
-                                <input type="url" class="form-control" id="profile_picture" name="profile_picture" 
-                                       placeholder="https://example.com/image.jpg" maxlength="255">
-                            </div>
-                            <button type="submit" class="btn btn-success w-100">
-                                <i class="fas fa-save me-2"></i>Add Lecturer
-                            </button>
-                        </form>
-                    </div>
+    <!-- Flash Messages -->
+    <% if (typeof message !== 'undefined' && message) { %>
+        <div class="alert alert-<%= typeof messageType !== 'undefined' ? messageType : 'info' %> alert-dismissible fade show" role="alert">
+            <i class="fas <%= (typeof messageType !== 'undefined' && messageType === 'success') ? 'fa-check-circle' : 'fa-exclamation-triangle' %> me-2"></i>
+            <%= message %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-gray-800"><i class="fas fa-chalkboard-teacher me-2"></i>Manage Lecturers</h1>
+        <a href="/admin/dashboard" class="btn btn-secondary"><i class="fas fa-arrow-left me-1"></i> Back to Dashboard</a>
+    </div>
+
+    <div class="row">
+        <!-- Add Lecturer Form -->
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0"><i class="fas fa-plus-circle me-2"></i>Add New Lecturer</h5>
+                </div>
+                <div class="card-body">
+                    <form action="/admin/add-lecturer" method="POST">
+                        <div class="mb-3">
+                            <label for="lecturer_id" class="form-label">Lecturer ID *</label>
+                            <input type="text" class="form-control" id="lecturer_id" name="lecturer_id" placeholder="e.g., LEC013" required maxlength="50">
+                        </div>
+                        <div class="mb-3">
+                            <label for="first_name" class="form-label">First Name *</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter first name" required maxlength="50">
+                        </div>
+                        <div class="mb-3">
+                            <label for="last_name" class="form-label">Last Name *</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter last name" required maxlength="50">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="lecturer@mubas.ac.mw" required maxlength="100">
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password *</label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required maxlength="255">
+                        </div>
+                        <button type="submit" class="btn btn-success w-100"><i class="fas fa-save me-2"></i>Add Lecturer</button>
+                    </form>
                 </div>
             </div>
+        </div>
 
-            <!-- Lecturers List -->
-            <div class="col-lg-8">
-                <div class="card">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-list me-2"></i>Lecturers List
-                            <span class="badge bg-light text-dark ms-2"><%= (lecturers || []).length %> lecturer(s)</span>
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <% if (!lecturers || lecturers.length === 0) { %>
-                            <div class="text-center py-4">
-                                <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                                <p class="text-muted">No lecturers found. Add your first lecturer using the form.</p>
-                            </div>
-                        <% } else { %>
-                            <div class="table-responsive">
-                                <table class="table table-hover table-striped">
-                                    <thead class="table-light">
+        <!-- Lecturers List -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>Lecturers List
+                        <span class="badge bg-light text-dark ms-2"><%= (lecturers ? lecturers.length : 0) %> lecturer(s)</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <% if (!lecturers || lecturers.length === 0) { %>
+                        <div class="text-center py-4">
+                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No lecturers found. Add your first lecturer using the form.</p>
+                        </div>
+                    <% } else { %>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Profile Picture</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% lecturers.forEach(lecturer => { %>
                                         <tr>
-                                            <th>ID</th>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Profile Picture</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <% lecturers.forEach(lecturer => { %>
-                                            <tr>
-                                                <td><strong><%= lecturer.lecturer_id %></strong></td>
-                                                <td><%= lecturer.first_name %> <%= lecturer.last_name %></td>
-                                                <td>
-                                                    <a href="mailto:<%= lecturer.email %>" class="text-decoration-none">
-                                                        <%= lecturer.email %>
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <% if (lecturer.profile_picture) { %>
-                                                        <span class="badge bg-info">Available</span>
-                                                    <% } else { %>
-                                                        <span class="badge bg-secondary">None</span>
-                                                    <% } %>
-                                                </td>
-                                                <td>
-                                                    <div class="btn-group">
-                                                        <!-- Edit Button -->
-                                                        <button type="button" class="btn btn-warning btn-sm btn-action" 
-                                                                data-bs-toggle="modal" data-bs-target="#editLecturerModal"
-                                                                data-id="<%= lecturer.lecturer_id %>"
-                                                                data-first="<%= lecturer.first_name %>"
-                                                                data-last="<%= lecturer.last_name %>"
-                                                                data-email="<%= lecturer.email %>"
-                                                                data-picture="<%= lecturer.profile_picture || '' %>">
-                                                            <i class="fas fa-edit"></i>
+                                            <td><strong><%= lecturer.lecturer_id %></strong></td>
+                                            <td><%= lecturer.first_name %> <%= lecturer.last_name %></td>
+                                            <td><a href="mailto:<%= lecturer.email %>" class="text-decoration-none"><%= lecturer.email %></a></td>
+                                            <td>
+                                                <% if (lecturer.profile_picture) { %>
+                                                    <img src="<%= lecturer.profile_picture %>" alt="Profile" class="rounded-circle" width="40" height="40" onerror="this.style.display='none'">
+                                                <% } else { %>
+                                                    <span class="badge bg-secondary">None</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <!-- Edit Button -->
+                                                    <button type="button" class="btn btn-warning btn-sm btn-action"
+                                                        data-bs-toggle="modal" data-bs-target="#editLecturerModal"
+                                                        data-id="<%= lecturer.lecturer_id %>"
+                                                        data-first="<%= lecturer.first_name %>"
+                                                        data-last="<%= lecturer.last_name %>"
+                                                        data-email="<%= lecturer.email %>"
+                                                        data-picture="<%= lecturer.profile_picture || '' %>">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <!-- Delete Button -->
+                                                    <form action="/admin/delete-lecturer" method="POST" class="d-inline">
+                                                        <input type="hidden" name="lecturer_id" value="<%= lecturer.lecturer_id %>">
+                                                        <button type="submit" class="btn btn-danger btn-sm btn-action" onclick="return confirm('Are you sure you want to delete <%= lecturer.first_name %> <%= lecturer.last_name %>? This action cannot be undone.')">
+                                                            <i class="fas fa-trash"></i>
                                                         </button>
-                                                        <!-- Delete Button -->
-                                                        <form action="/admin/delete-lecturer" method="POST" class="d-inline">
-                                                            <input type="hidden" name="lecturer_id" value="<%= lecturer.lecturer_id %>">
-                                                            <button type="submit" class="btn btn-danger btn-sm btn-action" 
-                                                                    onclick="return confirm('Are you sure you want to delete <%= lecturer.first_name %> <%= lecturer.last_name %>? This action cannot be undone.')">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <% }); %>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <% } %>
-                    </div>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } %>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Edit Lecturer Modal -->
-    <div class="modal fade" id="editLecturerModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-warning text-dark">
-                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Lecturer</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form action="/admin/update-lecturer" method="POST">
-                    <div class="modal-body">
-                        <input type="hidden" id="edit_lecturer_id" name="lecturer_id">
-                        <div class="mb-3">
-                            <label for="edit_first_name" class="form-label">First Name *</label>
-                            <input type="text" class="form-control" id="edit_first_name" name="first_name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_last_name" class="form-label">Last Name *</label>
-                            <input type="text" class="form-control" id="edit_last_name" name="last_name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_email" class="form-label">Email *</label>
-                            <input type="email" class="form-control" id="edit_email" name="email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_profile_picture" class="form-label">Profile Picture URL</label>
-                            <input type="url" class="form-control" id="edit_profile_picture" name="profile_picture">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-warning">Update Lecturer</button>
-                    </div>
-                </form>
+<!-- Edit Lecturer Modal -->
+<div class="modal fade" id="editLecturerModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Lecturer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+            <form action="/admin/update-lecturer" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" id="edit_lecturer_id" name="lecturer_id">
+                    <div class="mb-3">
+                        <label for="edit_first_name" class="form-label">First Name *</label>
+                        <input type="text" class="form-control" id="edit_first_name" name="first_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_last_name" class="form-label">Last Name *</label>
+                        <input type="text" class="form-control" id="edit_last_name" name="last_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_email" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="edit_email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_password" class="form-label">Password (leave blank to keep unchanged)</label>
+                        <input type="password" class="form-control" id="edit_password" name="password" maxlength="255">
+                    </div>
+                    <div class="mb-3">
+                        <label for="Password" class="form-label"></label>
+                        <input type="password" class="form-control" id="password" name="password">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Update Lecturer</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const editModal = document.getElementById('editLecturerModal');
-            if (editModal) {
-                editModal.addEventListener('show.bs.modal', function(event) {
-                    const button = event.relatedTarget;
-                    document.getElementById('edit_lecturer_id').value = button.getAttribute('data-id');
-                    document.getElementById('edit_first_name').value = button.getAttribute('data-first');
-                    document.getElementById('edit_last_name').value = button.getAttribute('data-last');
-                    document.getElementById('edit_email').value = button.getAttribute('data-email');
-                    document.getElementById('edit_profile_picture').value = button.getAttribute('data-picture') || '';
-                });
-            }
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const editModal = document.getElementById('editLecturerModal');
+        if (editModal) {
+            editModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                document.getElementById('edit_lecturer_id').value = button.getAttribute('data-id');
+                document.getElementById('edit_first_name').value = button.getAttribute('data-first');
+                document.getElementById('edit_last_name').value = button.getAttribute('data-last');
+                document.getElementById('edit_email').value = button.getAttribute('data-email');
+                document.getElementById('edit_profile_picture').value = button.getAttribute('data-picture') || '';
+            });
+        }
 
-            // Auto-dismiss alerts after 5 seconds
-            setTimeout(() => {
-                const alerts = document.querySelectorAll('.alert');
-                alerts.forEach(alert => {
-                    const bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
-                });
-            }, 5000);
-        });
-    </script>
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    });
+</script>
 </body>
 </html>
