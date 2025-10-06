@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mubas Grading System</title>
+<title>MUBAS Grading System</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-/* Your existing CSS remains the same */
 body {margin:0;font-family:Arial,sans-serif;background:#f5f7fa;color:#333;}
 .header {background:#003366;color:#fff;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;}
 .header .logo {display:flex;align-items:center;}
@@ -29,9 +28,9 @@ body {margin:0;font-family:Arial,sans-serif;background:#f5f7fa;color:#333;}
 .content {display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;padding:20px;}
 .section {background:#fff;border-radius:8px;padding:15px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
 .section h4 {margin:0 0 10px;color:#555;}
-.table {width:100%;border-collapse:collapse;}
+.table {width:100%;border-collapse:collapse;margin-top:10px;}
 .table tr {border-bottom:1px solid #eee;}
-.table td {padding:8px;}
+.table td, .table th {padding:8px;text-align:left;}
 .notice {margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #eee;}
 .notice .date {color:#d9534f;font-size:12px;margin-bottom:4px;}
 .notice b {display:block;}
@@ -48,113 +47,83 @@ body {margin:0;font-family:Arial,sans-serif;background:#f5f7fa;color:#333;}
   </div>
   <div class="user-info">
     <span style="color:#05d72f;">
-      Welcome <%= typeof student !== 'undefined' ? (student.first_name || "N/A") : "Student" %> 
-      <%= typeof student !== 'undefined' ? (student.last_name || "") : "" %>
+      Welcome <%= student.first_name %> <%= student.last_name %>
     </span>
-    <img src="<%= '/images/—Pngtree—illustration of graduation cap on_20093403.png' %>" alt="Avatar">
+    <img src="<%= student.photo || '/images/default-avatar.png' %>" alt="Avatar">
   </div>
 </div>
 
 <!-- Navbar -->
 <div class="navbar">
   <ul>
-    <li class="active"><a href="/student/dashboard" style="text-decoration: none; color: white;"><i class="fas fa-user-circle"></i> My account</a></li>
-    <li><a href="/student/profile" style="text-decoration: none; color: white;"><i class="fas fa-book" style="text-decoration: none; color: white;"></i> Profile</a></li>
-    <li><a href="/student/grades" style="text-decoration: none;color: white;"><i class="fas fa-book" style="text-decoration: none; color: white;"></i> All Grades</a></li>
-    <li><a href="/student/grades" style="text-decoration: none; color: white;"><i class="fas fa-book" style="text-decoration: none; color: white;"></i> Exam Results</a></li>
-
-    <li><a href="/logout" style="margin-left:10px;font-size: 20px; ;padding-left: 570px;  color:red; border-radius:4px; text-decoration:none;"> <i class="fas fa-sign-out-alt"></i>Logout</a></li>
+    <li class="active"><a href="/student/dashboard" style="text-decoration:none;color:white;"><i class="fas fa-user-circle"></i> Dashboard</a></li>
+    <li><a href="/student/profile" style="text-decoration:none;color:white;"><i class="fas fa-book"></i> Profile</a></li>
+    <li><a href="/student/grades" style="text-decoration:none;color:white;"><i class="fas fa-book"></i> All Grades</a></li>
+    <li><a href="/logout" style="margin-left:10px;font-size:20px;color:red;text-decoration:none;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
   </ul>
 </div>
 
-<!-- Dashboard cards -->
+<!-- Dashboard Cards -->
 <div class="dashboard">
   <div class="card card-blue">
     <h3>Account Balance</h3>
-    <div class="value">MK2000</div>
+    <div class="value">MK<%= student.balance || 0 %></div>
   </div>
   <div class="card card-red">
-    <h3>Registration status</h3>
-    <div class="value"><%= typeof student !== 'undefined' ? (student.class_name || "BIS3") : "BIS3" %></div>
-    <div>Registered (<%= typeof student !== 'undefined' ? (student.registration_date || "02/July/2025 -Closed") : "02/July/2025 -Closed" %>)</div>
+    <h3>Program / Class</h3>
+    <div class="value"><%= student.program || "N/A" %></div>
+    <div>Class ID: <%= student.class_id || "N/A" %></div>
   </div>
   <div class="card card-green">
-    <h3>Registration period (Semester 2)</h3>
-    <div class="value"><%= typeof student !== 'undefined' ? (student.reg_period_start || "") : "" %> <%= typeof student !== 'undefined' ? (student.reg_period_end || "") : "" %></div>
-    <div style="color:#05d72f;"><%= typeof student !== 'undefined' ? (student.registration_status || "02/03/2025-10/04/2025") : "02/03/2025-10/04/2025" %></div>
+    <h3>Registration Status</h3>
+    <div class="value" style="color:#05d72f;">Open</div>
   </div>
 </div>
 
-<!-- Quick links -->
+<!-- Quick Links -->
 <div class="quick-links">
-  <a href="/student/grades" style="text-decoration: none;"> <i class="fas fa-info-circle"></i>  Examination results available</a>
+  <a href="/student/grades" style="text-decoration:none;"><i class="fas fa-info-circle"></i> Examination results available</a>
 </div>
 
-<!-- Content sections -->
+<!-- Content Sections -->
 <div class="content">
 
-  <!-- Calendar -->
-  <div class="section">
-    <h4>Calendar of Events</h4>
-    <table class="table" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-      <thead>
-        <tr style="background:#f0f0f0;">
-          <th style="padding: 8px; text-align:left;"></th>
-          <th style="padding: 8px; text-align:left;">Event Name</th>
-          <th style="padding: 8px; text-align:left;">Date</th>
-          <th style="padding: 8px; text-align:left;">Location</th>
-          <th style="padding: 8px; text-align:left;">Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>Orientation Day</td>
-          <td>2026-01-(26-28)</td>
-          <td>Comesa Hall</td>
-          <td>Welcome new students and briefing.</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Sports Day</td>
-          <td>2026-03-05</td>
-          <td>MUBAS Ground</td>
-          <td>Annual sports competitions.</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>End of Semester 3 Exams</td>
-          <td>2025-10-15</td>
-          <td>Various Classrooms</td>
-          <td>Exams for Semester 2 modules.</td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>Graduation Ceremony</td>
-          <td>2025-10-25</td>
-          <td>MUBAS Ground</td>
-          <td>Graduating students' ceremony.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Modules table -->
+  <!-- Modules to attend (Current Semester Only) -->
   <div class="section">
     <h4><i class="fas fa-book"></i> Modules to attend - Semester 2</h4>
     <% if (modules && modules.length > 0) { %>
       <table class="table">
-        <% modules.forEach((m, i) => { %>
+        <thead>
           <tr>
-            <td><%= i + 1 %></td>
-            <td><%= m.module_code %> <%= m.module_name %></td>
+            <th>#</th>
+            <th>Module Name</th>
           </tr>
-        <% }) %>
+        </thead>
+        <tbody>
+          <% modules.forEach((m, i) => { %>
+            <tr>
+              <td><%= i + 1 %></td>
+              <td><%= m.module_name %></td>
+            </tr>
+          <% }) %>
+        </tbody>
       </table>
     <% } else { %>
-      <p>No registered modules.</p>
+      <p>No registered modules for this semester.</p>
     <% } %>
   </div>
+
+      <!-- Events Section -->
+      <div class="section">
+        <h4><i class="fas fa-calendar-alt"></i> Events - Semester 2</h4>
+        <p>No current events available.</p>
+      </div>
+
+
+</div>
+
+<div class="footer">
+  &copy; <%= new Date().getFullYear() %> MUBAS. All rights reserved.
 </div>
 
 </body>
